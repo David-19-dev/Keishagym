@@ -43,16 +43,16 @@ into both native projects — re-run it after every web-code change before build
 
 ## App icons & splash screens
 
-`frontend/resources/icon.svg` is the 1024×1024 source (the app's dumbbell glyph on the
-app background). Generate all platform assets from it on a machine with the tooling:
+`frontend/resources/icon.svg` is the 1024×1024 source: the KeishaGym mark (ink dumbbell on
+mint), built from the identity guide in `assets/brand/`. One script renders every PNG the web
+app and the native generator need (web icons, favicon, adaptive-icon layers, splash), then
+Capacitor spreads them over the Android and iOS projects:
 
 ```sh
 cd frontend
-npx @capacitor/assets generate --iconBackgroundColor '#0c0e12' --splashBackgroundColor '#0c0e12'
+node scripts/brand-icons.mjs
+npx @capacitor/assets generate --android --ios --iconBackgroundColor '#1FD8A4' --iconBackgroundColorDark '#1FD8A4' --splashBackgroundColor '#0E0E0C' --splashBackgroundColorDark '#0E0E0C'
 ```
-
-(If the generator won't take the SVG directly, export it to `resources/icon.png` at
-1024×1024 first — any image tool can do it.)
 
 ## Distribution — deliberately no app stores
 

@@ -1,5 +1,5 @@
 /* ============================================================================
-   openGym — design system
+   KeishaGym — design system (built on openGym's)
    ----------------------------------------------------------------------------
    Rebuilt around four rules, each aimed at a specific "generated" tell in the
    previous sheet:
@@ -18,22 +18,33 @@
 
 /* ---------------------------------------------------------------- tokens -- */
 :root {
-  /* surfaces — dark is the default */
-  --bg:        #000000;
-  --bg-el:     #0e0e10;   /* elevated backdrop (sheets, bars) */
-  --surface:   #1c1c1e;   /* card / grouped-list fill */
-  --surface-2: #2c2c2e;   /* pressed + nested fill */
-  --surface-3: #3a3a3c;   /* controls (segmented track, switch off) */
+  /* KeishaGym identity v1 — the source palette; everything below is derived from it */
+  --kg-ink:        #0E0E0C;
+  --kg-paper:      #F5F5F0;
+  --kg-mint:       #1FD8A4;
+  --kg-mint-deep:  #0A7A5E;
+  --kg-line:       #E2E2D8;
+  --kg-line-dark:  #26261F;
+  --font-brand: Anton, 'Archivo', sans-serif;
+  --font-text:  Archivo, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+  --font-mono:  'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
-  /* text */
-  --label:     #ffffff;
-  --label-2:   rgba(235,235,245,.60);
-  --label-3:   rgba(235,235,245,.32);
-  --label-4:   rgba(235,235,245,.18);
+  /* surfaces — dark is the default: a warm ramp up from the brand ink */
+  --bg:        var(--kg-ink);
+  --bg-el:     #141412;   /* elevated backdrop (sheets, bars) */
+  --surface:   #1b1b18;   /* card / grouped-list fill */
+  --surface-2: var(--kg-line-dark);   /* pressed + nested fill */
+  --surface-3: #34342c;   /* controls (segmented track, switch off) */
+
+  /* text — paper on ink */
+  --label:     var(--kg-paper);
+  --label-2:   rgba(245,245,240,.58);
+  --label-3:   rgba(245,245,240,.32);
+  --label-4:   rgba(245,245,240,.18);
 
   /* lines */
-  --sep:       rgba(84,84,88,.60);
-  --sep-op:    rgba(84,84,88,.34);   /* for edges sitting over blur */
+  --sep:       rgba(140,140,132,.36);
+  --sep-op:    rgba(140,140,132,.22);   /* for edges sitting over blur */
   --hair:      .5px;
 
   /* system palette (iOS dark values) */
@@ -41,10 +52,10 @@
   --yellow:#ffd60a; --teal:#40c8e0; --indigo:#5e5ce6; --pink:#ff375f;
   --purple:#bf5af2; --mint:#63e6e2; --brown:#ac8e68; --grey:#8e8e93;
 
-  /* accent (per-account, synced) */
-  --acc:  var(--green);
-  --acc-2:#248a3d;
-  --on-acc:#000000;
+  /* accent — the brand mint, the one colour KeishaGym spends on action and live data */
+  --acc:  var(--kg-mint);
+  --acc-2:#17b088;
+  --on-acc:var(--kg-ink);
   --acc-soft: color-mix(in srgb, var(--acc) 16%, transparent);
   --acc-line: color-mix(in srgb, var(--acc) 38%, transparent);
 
@@ -62,48 +73,29 @@
 }
 
 :root[data-theme="light"] {
-  --bg:        #f2f2f7;
-  --bg-el:     #f7f7fa;
+  --bg:        var(--kg-paper);
+  --bg-el:     #fafaf6;
   --surface:   #ffffff;
-  --surface-2: #ececef;
-  --surface-3: #e3e3e8;
+  --surface-2: #ecece4;
+  --surface-3: var(--kg-line);
 
-  --label:     #000000;
-  --label-2:   rgba(60,60,67,.60);
-  --label-3:   rgba(60,60,67,.30);
-  --label-4:   rgba(60,60,67,.16);
+  --label:     var(--kg-ink);
+  --label-2:   rgba(58,58,50,.72);
+  --label-3:   rgba(58,58,50,.40);
+  --label-4:   rgba(58,58,50,.18);
 
-  --sep:       rgba(60,60,67,.29);
-  --sep-op:    rgba(60,60,67,.20);
+  --sep:       rgba(107,107,98,.30);
+  --sep-op:    rgba(107,107,98,.20);
 
   --blue:#007aff; --green:#34c759; --red:#ff3b30; --orange:#ff9500;
   --yellow:#ffcc00; --teal:#30b0c7; --indigo:#5856d6; --pink:#ff2d55;
   --purple:#af52de; --mint:#00c7be; --brown:#a2845e; --grey:#8e8e93;
-  --acc-2:#248a3d;
+  /* Mint on paper is 1.6:1, too faint for text or thin marks, so the light theme uses the
+     brand's deep mint (5.2:1) — the identity guide's own rule for light grounds. */
+  --acc:  var(--kg-mint-deep);
+  --acc-2:#075c47;
   --on-acc:#ffffff;
 }
-
-/* accents — Apple's system colours, so a recolour never looks off-system */
-:root[data-accent="lime"]  { --acc:var(--green);  --acc-2:#248a3d; --on-acc:#000 }
-:root[data-accent="sky"]   { --acc:var(--blue);   --acc-2:#0060df; --on-acc:#fff }
-:root[data-accent="orange"]{ --acc:var(--orange); --acc-2:#c76b00; --on-acc:#000 }
-:root[data-accent="violet"]{ --acc:var(--purple); --acc-2:#8944ab; --on-acc:#fff }
-:root[data-accent="pink"]  { --acc:var(--pink);   --acc-2:#d70036; --on-acc:#fff }
-:root[data-accent="red"]   { --acc:var(--red);    --acc-2:#d70015; --on-acc:#fff }
-:root[data-accent="teal"]  { --acc:var(--teal);   --acc-2:#0071a4; --on-acc:#000 }
-:root[data-accent="gold"]  { --acc:var(--yellow); --acc-2:#b25000; --on-acc:#000 }
-/* Label colour on a filled accent button is picked per accent by measured contrast,
-   not by taste. Button text is 17px/600, so the AA bar is 3:1 (large text). White on
-   the light-theme green is 2.22:1 and on teal 2.57:1 — both fail, and green is the
-   DEFAULT accent, so every primary button in light mode was failing. Black scores
-   9.46 / 8.16 there. Blue, purple, pink and red keep white (3.5–4.1:1), which both
-   passes and matches the platform convention. */
-:root[data-theme="light"][data-accent="lime"],
-:root[data-theme="light"][data-accent="teal"]  { --on-acc:#000 }
-:root[data-theme="light"][data-accent="sky"],
-:root[data-theme="light"][data-accent="violet"],
-:root[data-theme="light"][data-accent="pink"],
-:root[data-theme="light"][data-accent="red"]   { --on-acc:#fff }
 
 /* ---------------------------------------------------------------- reset -- */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -113,7 +105,7 @@ html{
 }
 body{
   background:var(--bg);color:var(--label);
-  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Segoe UI',Roboto,system-ui,sans-serif;
+  font-family:var(--font-text);
   font-size:17px;line-height:1.29;letter-spacing:-.01em;
   min-height:100vh;overscroll-behavior-y:none;overflow-x:clip;
   -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
@@ -126,7 +118,7 @@ img{max-width:100%}
 a{color:var(--acc);text-decoration:none}
 :focus{outline:none}
 :focus-visible{outline:2.5px solid var(--acc);outline-offset:2px;border-radius:6px}
-button,.chip,.tile,.item,.wday,.cal-d,.swatch,.hm-c,.lrow,.seg button,.stp button,.sld
+button,.chip,.tile,.item,.wday,.cal-d,.hm-c,.lrow,.seg button,.stp button,.sld
 {-webkit-user-select:none;user-select:none}
 
 /* icons inherit colour and optical size from their context */
@@ -850,11 +842,6 @@ h4.sec{
 .cal-legend{display:flex;gap:14px;justify-content:center;margin-top:12px;font-size:12px;color:var(--label-3)}
 .cal-legend i{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px}
 
-/* --- accent swatches --- */
-.swatches{display:flex;gap:12px;flex-wrap:wrap}
-.swatch{width:32px;height:32px;border-radius:50%;flex:none;position:relative;transition:transform var(--fast)}
-.swatch:active{transform:scale(.9)}
-.swatch.on::after{content:'';position:absolute;inset:-4px;border-radius:50%;box-shadow:0 0 0 2px var(--label)}
 
 /* --- supersets --- */
 .ss-label{
@@ -913,3 +900,34 @@ h4.sec{
   .exmedia img{height:380px}
   .hm-wrap{display:flex;flex-direction:column;align-items:center}
 }
+
+/* ======================================================== KeishaGym brand -- */
+/* The identity layer, kept in one place on purpose: the rules above build the system,
+   these give it the KeishaGym voice. Archivo carries text and titles, IBM Plex Mono carries
+   numbers and labels (what you read mid-set, at a glance), Anton is reserved for the mark. */
+
+/* titles: Archivo at its heaviest cut, only where a screen names itself */
+.hdr h1,.t-large{font-weight:800;letter-spacing:-.02em}
+
+/* numbers you read across a set — weights, reps, timers, headline stats */
+/* (.big is also a text title — only the ones marked .num are numbers) */
+.card .big.num,.tile .v,.stat-v,#timer .t,.stp .num,.efftbl .n,.setrow .n,.wday .num{
+  font-family:var(--font-mono);font-weight:500;letter-spacing:-.02em;
+}
+
+/* labels: mono capitals, quiet, spaced — they name things, they don't compete */
+.sect-t,h4.sec,.card h2,.tile .l,.wday .lbl,.cal-h,.today-row .lbl2,
+.efftbl .hd .n,.efftbl .hd .f{
+  font-family:var(--font-mono);font-size:11.5px;font-weight:500;
+  text-transform:uppercase;letter-spacing:.06em;
+}
+
+/* the logo: rounded mint square + ink dumbbell, and the KEISHA|GYM wordmark */
+.kg-logo{display:inline-block;vertical-align:middle;flex:none}
+.wordmark{
+  font-family:var(--font-brand);font-weight:400;text-transform:uppercase;
+  letter-spacing:.02em;line-height:1;color:var(--label);
+}
+.wordmark b{font-weight:400;color:var(--acc)}
+.brandhead{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:6px}
+.brandhead .wordmark{font-size:40px}

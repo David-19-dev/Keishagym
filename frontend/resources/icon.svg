@@ -1,13 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 512 512">
-  <!-- App-icon source == the PWA icon (public/icon-512.png), geometry traced 1:1 so the
-       native app, the home-screen PWA and the website favicon all show the same icon.
-       Generate platform icons + splash via `npx @capacitor/assets generate` — docs/MOBILE.md. -->
-  <rect width="512" height="512" fill="#0c0e12"/>
-  <g fill="#a3e635">
-    <rect x="80" y="242" width="352" height="28"/>
-    <rect x="80" y="199" width="36" height="114"/>
-    <rect x="131" y="169" width="47" height="174"/>
-    <rect x="334" y="169" width="47" height="174"/>
-    <rect x="396" y="199" width="36" height="114"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 100 100">
+  <!-- KeishaGym app-icon source: full-bleed mint square (iOS / Android apply their own mask),
+       ink dumbbell built from the identity guide (assets/brand/README.md):
+       gap 2.8 · bar 25 × 8.5 · large plates 9.7 × 42 · small plates 6.8 × 25 (% of the side).
+       Regenerate every platform icon with `node scripts/brand-icons.mjs` then
+       `npx @capacitor/assets generate` with the android and ios flags, see docs/MOBILE.md. -->
+  <rect width="100" height="100" fill="#1FD8A4"/>
+  <g fill="#0E0E0C">
+    <rect x="15.4" y="37.5" width="6.8" height="25" rx="1.7"/>
+    <rect x="25" y="29" width="9.7" height="42" rx="2.3"/>
+    <rect x="37.5" y="45.75" width="25" height="8.5"/>
+    <rect x="65.3" y="29" width="9.7" height="42" rx="2.3"/>
+    <rect x="77.8" y="37.5" width="6.8" height="25" rx="1.7"/>
   </g>
 </svg>

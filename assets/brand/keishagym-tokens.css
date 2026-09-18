@@ -1,0 +1,15 @@
+:root {
+  /* KeishaGym — identité v1 */
+  --kg-ink:        #0E0E0C; /* oklch(0.17 0.004 95) */
+  --kg-paper:      #F5F5F0; /* oklch(0.96 0.004 95) */
+  --kg-mint:       #1FD8A4; /* oklch(0.80 0.14 168) */
+  --kg-mint-deep:  #0A7A5E; /* oklch(0.47 0.10 168) */
+  --kg-label:      #6B6B62; /* sur fond clair */
+  --kg-label-dark: #8C8C84; /* sur fond sombre */
+  --kg-line:       #E2E2D8; /* filets sur clair */
+  --kg-line-dark:  #26261F; /* filets sur sombre */
+
+  --kg-font-brand: Anton, sans-serif;      /* marque, capitales, tracking 0.02em */
+  --kg-font-text:  Archivo, Helvetica, sans-serif;
+  --kg-font-mono:  'IBM Plex Mono', monospace;
+}
