@@ -1,0 +1,10 @@
+{
+  "name": "keishagym",
+  "private": true,
+  "description": "KeishaGym — root shortcuts; the web app lives in frontend/, the server in api/.",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "test": "npm --prefix frontend test"
+  }
+}

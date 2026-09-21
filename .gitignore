@@ -20,3 +20,6 @@ node_modules/
 CLAUDE.md
 AGENTS.md
 graphify-out/
+
+# Local Vite env (Supabase URL + anon key per environment)
+*.local
