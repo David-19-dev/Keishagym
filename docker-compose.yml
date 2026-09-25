@@ -1,4 +1,4 @@
-name: opengym
+name: keishagym
 
 services:
   # One-time: download the exercise photos into ./media/ex (skipped if already there).
@@ -20,36 +20,20 @@ services:
         fi
     restart: "no"
 
-  # Passkey auth + per-user data (Node, no framework).
-  # image: prebuilt (docker compose pull). build: from source (docker compose up --build).
-  api:
-    image: ghcr.io/duartesantos8/opengym-api:latest
-    build: ./api
-    restart: unless-stopped
-    env_file: .env
-    environment:
-      - PORT=3000            # internal port (nginx proxies here) — do not change
-      - DATA_DIR=/data
-      - COACH_CODEX_HOME=/codex
-    volumes:
-      - ./data:/data         # users, passkeys, per-user state, session secret — BACK THIS UP
-      # ChatGPT/Codex refresh tokens are kept separate from app data and mounted only into the
-      # API container. This directory is owned by the unprivileged Coach runtime.
-      - ./data/codex:/codex
-
-  # Builds the React frontend (multi-stage) and serves it, proxying /api → api
-  # and the exercise media from the shared volume. Single origin for passkeys.
+  # Builds the React frontend (multi-stage) and serves it, together with the exercise photos
+  # from the shared volume. Accounts, sync and the Coach live in Supabase, not here.
   web:
-    image: ghcr.io/duartesantos8/opengym-web:latest
+    image: ghcr.io/david-19-dev/keishagym-web:latest
     build:
       context: .
       dockerfile: web/Dockerfile
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-}
     restart: unless-stopped
     depends_on:
       media:
         condition: service_completed_successfully
-      api:
-        condition: service_started
     ports:
       - "${WEB_PORT:-8080}:80"
     volumes:

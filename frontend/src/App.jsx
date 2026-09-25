@@ -24,7 +24,6 @@ import Stats from './views/Stats.jsx'
 import History from './views/History.jsx'
 import Library from './views/Library.jsx'
 import Settings from './views/Settings.jsx'
-import Admin from './views/Admin.jsx'
 import Coach from './views/Coach.jsx'
 import CoachIntake from './views/CoachIntake.jsx'
 import CoachProposal from './views/CoachProposal.jsx'
@@ -93,7 +92,6 @@ function Shell() {
               <Route path="/coach" element={<Coach />} />
               <Route path="/coach/intake" element={<CoachIntake />} />
               <Route path="/coach/proposal" element={<CoachProposal />} />
-              <Route path="/admin" element={user?.admin ? <Admin /> : <Navigate to="/home" replace />} />
               <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>
           )}

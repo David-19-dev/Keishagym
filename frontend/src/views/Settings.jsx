@@ -4,8 +4,7 @@ import { useStore, DEF, hasData } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
 import { todayISO, localTZ } from '../lib/format.js'
 import { effortOf } from '../lib/history.js'
-import { webauthnOK, passkeyLogin, passkeyRegister, IS_ANDROID } from '../lib/api.js'
-import { pushSupported, enablePush, disablePush, sendTestPush } from '../lib/push.js'
+import { IS_ANDROID } from '../lib/platform.js'
 import { wakeLockSupported } from '../lib/wakelock.js'
 import { t, LANGS, INSTR_LANGS } from '../lib/i18n.js'
 import { DEMO, REPO } from '../lib/demo.js'
@@ -23,7 +22,7 @@ export default function Settings() {
   const S = useStore(s => s.S)
   const user = useStore(s => s.user)
   const config = useStore(s => s.config)
-  const { update, replaceState, setUser, pullState, pushState, signOut, signOutAll, resetDemo, setGuest, deleteAccount } = useStore()
+  const { update, replaceState, signOut, signOutAll, resetDemo, setGuest, deleteAccount } = useStore()
   const toast = useUI(s => s.toast)
   const fileRef = useRef(null)
   const importRef = useRef(null)
@@ -53,19 +52,12 @@ export default function Settings() {
     }
     rd.readAsText(f)
   }
-  const signInHere = async () => {
-    try { const u = await passkeyLogin(); setUser(u); await pullState(); toast(t('Welcome back, {0}', u.name)) }
-    catch (e) { if (e.name !== 'NotAllowedError' && e.name !== 'AbortError') toast(e.message || t('Sign-in failed')) }
-  }
-  const registerHere = () => useUI.getState().openSheet(close => <RegisterInline close={close} setUser={setUser} pushState={pushState} pullState={pullState} toast={toast} />)
   // Ends the profile's sessions on every device — this one included, so on success it lands in
   // the same place as the plain sign-out above (home, local data cleared). On failure nothing
   // local is touched: still signed in here, and say so rather than leaving a half-signed-out app.
   const signOutEverywhere = () => confirmSheet({
     title: t('Sign out everywhere?'),
-    message: SUPABASE
-      ? t('Signs this account out on every device, including this one. Sign in again anytime with your email and password.')
-      : t('Signs this profile out on every device, including this one. Your passkeys keep working — sign in with them again anytime.'),
+    message: t('Signs this account out on every device, including this one. Sign in again anytime with your email and password.'),
     confirmText: t('Sign out everywhere'), danger: true,
     onConfirm: async () => {
       try { await signOutAll(); nav('/home'); toast(t('Signed out on all devices')) }
@@ -104,26 +96,12 @@ export default function Settings() {
       </> : (
         <Row icon="person" iconTint="var(--acc)" title={t('Sign in or create an account')} subtitle={t('Your data syncs to your account on every device.')} accessory="chevron"
           onClick={() => setGuest(false)} />
-      )) : MOBILE ? <>
-        <Row icon="lock" iconTint="var(--acc)" title={t('All data stays on this phone')} subtitle={t('No account, no cloud — back it up anytime with Export below.')} />
-        <Row icon="rocket" iconTint="var(--indigo)" title={t('Self-host openGym')} subtitle={t('Passkey sign-in, sync across your devices, your own data.')} accessory="chevron"
-          onClick={() => window.open(REPO, '_blank', 'noopener')} />
-      </> : DEMO ? <>
+      )) : DEMO ? <>
         <Row icon="sparkles" iconTint="var(--acc)" title={t('You’re in the demo')} subtitle={t('Example data, stored only in this browser — change anything you like.')} />
         <Row icon="reset" iconTint="var(--blue)" title={t('Reset demo data')} accessory="chevron"
           onClick={() => confirmSheet({ title: t('Reset demo data?'), message: t('Puts the example plan, workouts and weigh-ins back the way they started.'), confirmText: t('Reset'), onConfirm: () => { resetDemo(); nav('/home'); toast(t('Demo data reset')) } })} />
-        <Row icon="rocket" iconTint="var(--indigo)" title={t('Self-host openGym')} subtitle={t('Passkey sign-in, sync across your devices, your own data.')} accessory="chevron"
-          onClick={() => window.open(REPO, '_blank', 'noopener')} />
-      </> : user ? <>
-        <Row icon="personCircle" iconTint="var(--grey)" title={user.name} subtitle={t('Signed in with passkey — data syncs to this profile.')} />
-        {user.admin && <Row icon="wrench" iconTint="var(--indigo)" title={t('Admin dashboard')} accessory="chevron" onClick={() => nav('/admin')} />}
-        <Row icon="signOut" iconTint="var(--red)" title={t('Sign out')} danger onClick={() => confirmSheet({ title: t('Sign out?'), message: t('Your data is synced to your profile first, then cleared from this device.'), confirmText: t('Sign out'), danger: true, onConfirm: signOutHere })} />
-        <Row icon="shield" iconTint="var(--red)" title={t('Sign out everywhere')} subtitle={t('Ends this profile’s sessions on all your devices.')} danger onClick={signOutEverywhere} />
-      </> : webauthnOK() ? <>
-        <Row icon="sparkles" iconTint="var(--acc)" title={t('Create passkey profile')} subtitle={t('Keeps your data safe and separate per person.')} accessory="chevron" onClick={registerHere} />
-        <Row icon="person" iconTint="var(--blue)" title={t('Sign in with passkey')} accessory="chevron" onClick={signInHere} />
       </> : (
-        <Row icon="lock" iconTint="var(--grey)" title={t('Passkeys not supported in this browser.')} />
+        <Row icon="lock" iconTint="var(--acc)" title={t('All data stays on this phone')} subtitle={t('No account, no cloud — back it up anytime with Export below.')} />
       )}
     </Section>
     {!user && !DEMO && !MOBILE && <p className="sect-f" style={{ marginTop: -18, marginBottom: 22 }}>{t('Guest mode — data lives only in this browser.')}</p>}
@@ -180,10 +158,10 @@ export default function Settings() {
       </Section>
     )}
 
-    {(MOBILE || (user && !SUPABASE)) && <NotificationsCard S={S} update={update} toast={toast} />}
+    {MOBILE && <MobileReminderCard S={S} update={update} toast={toast} />}
 
     {/* ---------- appearance ---------- */}
-    <Section title={t('Appearance')} footer={DEMO || MOBILE ? undefined : t('synced with your profile')}>
+    <Section title={t('Appearance')} footer={user ? t('synced with your profile') : undefined}>
       <Row icon="moon" iconTint="var(--indigo)" title={t('Theme')}>
         <Segmented
           className="seg-inline"
@@ -272,11 +250,6 @@ function effortHelpSheet() {
   </>)
 }
 
-function NotificationsCard({ S, update, toast }) {
-  if (MOBILE) return <MobileReminderCard S={S} update={update} toast={toast} />
-  return <PushCard S={S} update={update} toast={toast} />
-}
-
 // Mobile build: the reminder is a native local notification scheduled on planned weekdays —
 // no push server involved. The schedule itself is (re)synced by the store on every persist;
 // this card only owns the OS permission prompt when the switch turns on.
@@ -304,79 +277,4 @@ function MobileReminderCard({ S, update, toast }) {
       )}
     </Section>
   )
-}
-
-function PushCard({ S, update, toast }) {
-  const [on, setOn] = useState(false)
-  const [busy, setBusy] = useState(false)
-  const supported = pushSupported()
-
-  useEffect(() => {
-    if (!supported) return
-    navigator.serviceWorker.ready.then(reg => reg.pushManager.getSubscription()).then(sub => setOn(!!sub)).catch(() => {})
-  }, [supported])
-
-  const toggle = async v => {
-    setBusy(true)
-    try {
-      if (!v) { await disablePush(); setOn(false); toast(t('Notifications off')) }
-      else { await enablePush(); setOn(true); toast(t('Notifications on')) }
-    } catch (e) { toast(e.message || t('Could not change notification settings')) }
-    setBusy(false)
-  }
-  const test = async () => {
-    try { await sendTestPush(); toast(t('Test sent — should arrive any second')) }
-    catch (e) { toast(e.message || t('Test failed')) }
-  }
-
-  if (!supported) return (
-    <Section title={t('Notifications')}>
-      <Row icon="bellSlash" iconTint="var(--grey)" title={t('Not supported in this browser.')} />
-    </Section>
-  )
-
-  return <>
-    <Section
-      title={t('Notifications')}
-      footer={on && S.reminder?.on
-        ? t("Only sent on days you have a routine planned and haven't logged a workout yet.") +
-          (S.reminder?.tz ? ' ' + t('Timezone: {0} (auto-detected, updates if you travel).', S.reminder.tz) : '')
-        : null}
-    >
-      <Row icon="bell" iconTint="var(--red)" title={t('Push notifications')} subtitle={t('Rest-timer alerts, even if KeishaGym is closed.')}>
-        <Switch checked={on} disabled={busy} onChange={toggle} />
-      </Row>
-      {on && (
-        <Row icon="calendar" iconTint="var(--orange)" title={t('Workout day reminder')}>
-          <Switch checked={!!S.reminder?.on} onChange={() => update(s => { s.reminder = { ...(s.reminder || DEF.reminder), on: !s.reminder?.on, tz: localTZ() } })} />
-        </Row>
-      )}
-      {on && S.reminder?.on && (
-        <Row icon="clock" iconTint="var(--purple)" title={t('Reminder time')}>
-          <input type="time" className="timef" value={S.reminder?.time || DEF.reminder.time}
-            onChange={e => update(s => { s.reminder = { ...(s.reminder || DEF.reminder), time: e.target.value, tz: localTZ() } })} />
-        </Row>
-      )}
-    </Section>
-    {on && <div style={{ marginTop: -12, marginBottom: 22 }}><Button size="sm" icon="bell" onClick={test}>{t('Send test notification')}</Button></div>}
-  </>
-}
-
-function RegisterInline({ close, setUser, pushState, pullState, toast }) {
-  const nameRef = useRef(null)
-  const go = async () => {
-    const n = (nameRef.current.value || '').trim()
-    if (!n) { toast(t('Enter a name')); return }
-    try {
-      const u = await passkeyRegister(n); setUser(u); close()
-      if (hasData(useStore.getState().S)) { await pushState(); toast(t('Profile created — data moved into it')) }
-      else { await pullState(); toast(t('Welcome, {0}', u.name)) }
-    } catch (e) { if (e.name !== 'NotAllowedError' && e.name !== 'AbortError') toast(e.message || t('Registration failed')) }
-  }
-  return <>
-    <h3>{t('Create your profile')}</h3>
-    <div className="muted small" style={{ marginBottom: 14 }}>{t('Pick a name, then confirm with your device.')}</div>
-    <TextField ref={nameRef} placeholder={t('Your name')} maxLength={40} />
-    <div style={{ height: 12 }} /><Button variant="primary" onClick={go}>{t('Create passkey')}</Button>
-  </>
 }

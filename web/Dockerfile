@@ -12,9 +12,15 @@ WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json* ./
 RUN npm ci 2>/dev/null || npm install
 COPY frontend/ ./
+# The app talks to Supabase directly, so its URL and public key are compiled in. Both are
+# public by design (the anon key is meant to sit in a browser); the service_role key never
+# belongs here. Leave them empty to build a device-only app with no accounts.
+ARG VITE_SUPABASE_URL=""
+ARG VITE_SUPABASE_ANON_KEY=""
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 RUN npm run build
 
 FROM nginx:alpine
 COPY web/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
-# exercise media (img/gif) is mounted at runtime from the media volume
+# exercise photos (ex/) and demo videos (vid/) are mounted at runtime from the media volume

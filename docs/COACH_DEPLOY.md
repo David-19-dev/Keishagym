@@ -1,42 +1,41 @@
-# Déployer le Coach IA (fonction Supabase)
+# Deploying the AI Coach
 
-Le Coach tourne dans une **Edge Function Supabase** (`supabase/functions/coach`), appelée par
-l'app avec la session de l'utilisateur. Elle interroge l'API Claude d'Anthropic avec **une clé
-qui reste sur ton serveur** : l'app ne la voit jamais.
+The Coach runs as a **Supabase Edge Function** (`supabase/functions/coach`), called by the app
+with the signed-in person's session. It talks to Anthropic's Claude API with **a key that stays
+on your server** — the app never sees it.
 
-Sans clé, ou avec `COACH_ENABLED=0`, la fonction se déclare désactivée et **l'app masque toute
-la fonctionnalité** — elle redevient exactement l'app qu'elle était avant.
+With no key, or with `COACH_ENABLED=0`, the function reports itself disabled and **the app hides
+the whole feature**: it is exactly the app it was before the Coach existed.
 
-## 1. La base de données
+## 1. The database
 
-Applique la migration `supabase/migrations/20260925000000_coach.sql` (Studio → SQL Editor).
-Elle crée `coach_profile` : une ligne par profil, lisible par son propriétaire seul, écrite
-uniquement par la fonction.
+Apply `supabase/migrations/20260925000000_coach.sql` (Studio → SQL Editor). It creates
+`coach_profile`: one row per profile, readable by its owner only, written by the function only.
 
-## 2. La clé API
+## 2. The API key
 
-Crée une clé sur [console.anthropic.com](https://console.anthropic.com) et **mets un plafond de
-dépense** sur le compte. Le Coach consomme quelques centimes par plan ou par revue, mais un
-plafond est la seule protection réelle contre une erreur de configuration.
+Create one at [console.anthropic.com](https://console.anthropic.com) and **set a spending limit
+on the account**. A plan or a review costs a few cents; the limit is the only real protection
+against a misconfiguration.
 
-## 3. Installer la fonction sur le NAS
+## 3. Install the function
 
-Copie le dossier dans l'installation Supabase auto-hébergée :
+Copy the directory into the self-hosted Supabase install:
 
 ```bash
-scp -r supabase/functions/coach/ ton-nas:/volume2/docker/supabase/docker/volumes/functions/
+scp -r supabase/functions/coach/ your-nas:/volume2/docker/supabase/docker/volumes/functions/
 ```
 
-Ajoute les variables dans le `.env` de Supabase :
+Add the variables to Supabase's `.env`:
 
 ```
 ANTHROPIC_API_KEY=sk-ant-...
 COACH_MODEL=claude-sonnet-5
 COACH_DAILY_CAP=5
-COACH_HANDLE_SECRET=<une chaîne aléatoire, ex. openssl rand -base64 32>
+COACH_HANDLE_SECRET=<random string, e.g. openssl rand -base64 32>
 ```
 
-Puis passe-les au service `functions` dans `docker-compose.yml` :
+Pass them to the `functions` service in `docker-compose.yml`:
 
 ```yaml
   functions:
@@ -47,56 +46,58 @@ Puis passe-les au service `functions` dans `docker-compose.yml` :
       COACH_HANDLE_SECRET: ${COACH_HANDLE_SECRET}
 ```
 
-Et redémarre le service :
+And restart it:
 
 ```bash
-sudo docker compose up -d functions
+docker compose up -d functions
 ```
 
-## 4. Vérifier
+On Supabase's hosted platform, `supabase functions deploy coach` and
+`supabase secrets set ANTHROPIC_API_KEY=…` do the same job.
 
-Dans l'app, avec un compte connecté : la carte du Coach apparaît sur l'accueil. L'app demande
-son état à la fonction une fois par session ; si la fonction n'est pas déployée ou pas
-configurée, rien ne s'affiche.
+## 4. Check it
 
-Côté serveur, les journaux de la fonction disent le reste :
+Signed in, the Coach card appears on the home screen. The app asks the function for its state
+once per session; if the function is not deployed, or not configured, nothing shows up.
+
+Server side, the logs say the rest:
 
 ```bash
-sudo docker compose logs -f functions
+docker compose logs -f functions
 ```
 
-## Réglages
+## Settings
 
-| Variable | Défaut | Rôle |
+| Variable | Default | What it does |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | — | Sans elle, le Coach est désactivé |
-| `COACH_MODEL` | `claude-sonnet-5` | Modèle utilisé |
-| `COACH_DAILY_CAP` | `5` | Nombre de travaux par profil et par jour (0 = illimité) |
-| `COACH_ENABLED` | `1` | `0` désactive la fonctionnalité sans retirer la clé |
-| `COACH_HANDLE_SECRET` | clé de service | Sert à dériver le pseudonyme envoyé au modèle |
+| `ANTHROPIC_API_KEY` | — | Without it the Coach is disabled |
+| `COACH_MODEL` | `claude-sonnet-5` | The model used |
+| `COACH_DAILY_CAP` | `5` | Jobs per profile per day (0 = unlimited) |
+| `COACH_ENABLED` | `1` | `0` turns the feature off without removing the key |
+| `COACH_HANDLE_SECRET` | the service key | Derives the pseudonym sent to the model |
 
-## Ce qui part chez Anthropic, et ce qui ne part pas
+## What reaches Anthropic, and what does not
 
-La fonction construit le contenu envoyé **champ par champ** (`payload.js`) : programme, séances
-de la fenêtre de revue, poids corporel, réponses du questionnaire, unité, langue et échelle
-d'effort. L'écran de consentement affiche cette liste, qu'il lit dans le même module.
+The function builds what it sends **field by field** (`payload.js`): the plan, the sessions in
+the review window, body weight, the intake answers, unit, language and effort scale. The consent
+screen lists those categories, reading them from that same module, so the screen cannot drift
+from the payload.
 
-**Ne partent jamais** : ton adresse e-mail, ton identifiant de compte (un pseudonyme stable le
-remplace), tes identifiants de connexion, et les données des autres profils.
+**Never sent:** your e-mail address, your account id (a stable pseudonym stands in), your
+credentials, and any other profile's anything.
 
-Rien de ce que répond le modèle n'atteint un programme sans passer par `validate.js` : chaque
-exercice cité doit exister dans la bibliothèque, et chaque modification doit correspondre à une
-liste fermée de types. C'est la vraie barrière de sécurité de la fonctionnalité : un texte
-malveillant glissé dans une note peut faire dire n'importe quoi à un modèle, il ne peut pas
-inventer un type de modification.
+Nothing the model answers reaches a plan without passing `validate.js`: every exercise it names
+must exist in the library, and every change must match a closed list of types. That validator —
+not the prompt — is the security boundary of the feature: a hostile note in someone's free text
+can talk a model into saying anything, but it cannot invent a change type.
 
-## Régénérer les fichiers de la fonction
+## Regenerating the function's files
 
-`library.json` (le catalogue d'exercices) et `prompts.js` (les consignes, écrites en Markdown
-dans `prompts/`) sont générés et versionnés :
+`library.json` (the exercise catalogue) and `prompts.js` (the instructions, authored as Markdown
+in `prompts/`) are generated and committed:
 
 ```bash
 node scripts/build-coach-assets.mjs
 ```
 
-Le déploiement se limite alors à copier le dossier.
+Deploying is then a copy of the directory, nothing more. CI fails if they are stale.

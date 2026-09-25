@@ -6,8 +6,7 @@
 // for a feature nobody is using.
 
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { api } from './api.js'
-import { SUPABASE, callCoach } from './backend.js'
+import { callCoach } from './backend.js'
 import { DEMO } from './demo.js'
 import { useStore } from '../store/useStore.js'
 
@@ -22,14 +21,9 @@ let demoMod = null
 const demo = async () => (demoMod = demoMod || await import('./coach-demo.js'))
 const S = () => useStore.getState().S
 
-// Three backends answer these: the demo build fakes them locally, a Supabase build calls the
-// Coach Edge Function, and a self-hosted build calls its own API. Same shapes throughout.
-const call = (action, body) => SUPABASE
-  ? callCoach({ action, ...body })
-  : api('/api/coach/' + PATHS[action], action === 'status' || action === 'disclosure'
-    ? undefined
-    : { method: 'POST', body: JSON.stringify(body || {}) })
-const PATHS = { status: 'status', disclosure: 'disclosure', plan: 'plan', review: 'review', resolve: 'pending/resolve', forget: 'forget' }
+// Two backends answer these: the demo build fakes them locally, everything else calls the
+// Coach Edge Function. Same shapes throughout.
+const call = (action, body) => callCoach({ action, ...body })
 
 export const coachStatus = async () => DEMO ? (await demo()).demoStatus() : call('status')
 export const requestReview = async note => DEMO ? (await demo()).demoReview(S()) : call('review', { note: note || '' })

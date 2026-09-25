@@ -1,69 +1,57 @@
-# Contributing to openGym
+# Contributing to KeishaGym
 
-Thanks for taking a look! openGym is intentionally small and dependency-light, and the goal is
-to keep it that way — easy to read, easy to self-host.
+Thanks for taking a look. KeishaGym is intentionally small and dependency-light, and the goal
+is that any part of it can be read in one sitting.
 
-## Project layout
+## The layout
 
 ```
-frontend/  React + Vite app (src/views, src/components, src/store, src/lib). Builds to static files.
-           android/ + ios/ are the Capacitor shells for the standalone mobile app (docs/MOBILE.md).
-api/       backend — server.js (Node, no framework), one dependency (@simplewebauthn/server).
-web/       multi-stage Dockerfile (builds frontend → nginx) + nginx.conf (serves app, proxies /api).
-media/     exercise img/gif (gitignored, fetched at runtime).
-docs/      self-hosting guide.
+frontend/              the app — React 19, Zustand, no framework beyond that
+  src/lib/             the logic worth testing: progression, history, effort, 1RM, muscles, coach
+  src/views/           one file per screen
+  android/ ios/        Capacitor projects, committed
+supabase/migrations/   the database and its row-level security
+supabase/functions/    the AI Coach Edge Function
+scripts/               generators (exercise dataset, Coach assets, brand icons)
+web/                   Dockerfile + nginx.conf that build and serve the app
 ```
 
-## Running for development
+## Running it
 
-```bash
-cp .env.example .env
-docker compose up -d --build      # api + web + media on :8080
-# frontend hot reload:
-cd frontend && npm install && npm run dev
-# training logic (progression rules, 1RM, how a session is read back):
-cd frontend && npm test
+```sh
+npm run dev                  # the app, on http://localhost:5173
+npm test                     # the whole suite
+docker compose up -d --build # app + exercise photos on :8080
 ```
 
-## Guidelines
+Without a Supabase configuration the app runs device-only, which is enough for most work. To
+test accounts and sync, point `frontend/.env.local` at a Supabase project (see
+[docs/SELF_HOSTING.md](docs/SELF_HOSTING.md)).
 
-- **Keep it dependency-light.** The frontend uses React + Router + Zustand and nothing else;
-  new deps (front or back) are a hard sell. `api/` has two (`@simplewebauthn/server` for passkeys,
-  `web-push` for notifications) — keep it near that.
-- **Match the style.** Small components, clear names, comments only where the "why" isn't obvious.
-  State lives in the Zustand store (`src/store`); pure helpers in `src/lib`.
-- **Don't commit** the exercise media (`media/`) or `data/` — they're gitignored.
-- **Test the flow** you touched — click through the affected screens (and the workout flow) in a
-  browser before opening a PR.
-- **Training logic gets a unit test.** Anything deciding what you lift next, or reading a logged
-  session back, belongs in a pure helper in `src/lib` with tests beside it (`npm test`). These
-  rules are easy to get subtly wrong and nearly impossible to verify by clicking — the
-  progression engine grew two real bugs that only a test pinned down.
+## What tends to get merged
 
-## Good first issues
+- **A fix with a test that fails without it.** The logic in `src/lib/` is covered; keep it that
+  way.
+- **Something that makes a screen simpler**, not something that adds a setting.
+- **A translation.** `frontend/scripts/check-locales.mjs` enforces that every locale carries the
+  same keys, and CI runs it.
 
-- Additional starter plans (upper/lower, full-body, 5×5…)
-- More languages for the exercise instructions (the dataset ships several)
-- Percentage / training-max programming (5/3/1-style) on top of the progression engine in
-  `src/lib/progression.js` — the policy interface is already there
-- Accessibility passes on the workout and chart screens
+New dependencies are a hard sell: the app has five runtime ones, and each is load-bearing.
 
-## Where to ask what
+## Generated files
 
-| You have | Goes to |
-| --- | --- |
-| A question, or self-hosting that won't behave | [Discussions → Q&A](https://github.com/DuarteSantos8/openGym/discussions/categories/q-a) |
-| An idea you're not sure about yet | [Discussions → Ideas](https://github.com/DuarteSantos8/openGym/discussions/categories/ideas) |
-| A reproducible bug | [Issues](https://github.com/DuarteSantos8/openGym/issues) |
-| A change you've already built | A pull request |
+Some files are generated and committed; edit the source, then run the generator:
 
-An answered question in Q&A is worth more than the same answer buried in a closed issue — the
-next person searching "passkey login fails behind my reverse proxy" actually finds it.
+| File | Generator |
+|---|---|
+| `frontend/src/lib/exercises-data.js` | `node scripts/build-exercises.mjs` |
+| `supabase/functions/coach/{library.json,prompts.js}` | `node scripts/build-coach-assets.mjs` |
+| app icons and splash screens | `node frontend/scripts/brand-icons.mjs` |
 
-## Reporting bugs
+CI fails if the Coach assets are stale.
 
-Open an issue with: what you did, what you expected, what happened, and your browser/OS. If it's
-about login/passkeys, include your `RP_ID`/`ORIGIN` (not the `data/` contents) — most login
-issues are an origin mismatch.
+## Style
 
-By contributing you agree your work is licensed under the project's [GNU AGPL v3.0](LICENSE).
+Match the file you are in. Comments explain *why* something is the way it is — the code already
+says what it does. Commit messages: one line saying what changed, then the reasoning if it isn't
+obvious.

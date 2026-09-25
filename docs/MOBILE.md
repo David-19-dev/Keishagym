@@ -1,20 +1,20 @@
 # Building the mobile app (iOS / Android)
 
-openGym ships in two flavors from the same codebase:
+KeishaGym ships in two flavors from the same codebase:
 
-| | **Self-hosted** (this repo's default) | **Mobile app** (`VITE_MOBILE=1`) |
+| | **Web app** (this repo's default) | **Mobile app** (`VITE_MOBILE=1`) |
 |---|---|---|
-| Runs | in any browser, against your own server | natively on iPhone / Android (Capacitor shell) |
-| Accounts | passkey sign-in, one profile per person | none — the phone *is* the account |
-| Data | synced to your server, readable on desktop | stays on the device (file in the app's private storage) |
-| Reminders | Web Push from your server | native local notifications, no server involved |
-| Exercise media | served by your server (`img/`, `gif/`) | loaded from the jsDelivr CDN |
+| Runs | in any browser, installable as a PWA | natively on iPhone / Android (Capacitor shell) |
+| Accounts | Supabase, e-mail + password | the phone, with Supabase accounts if configured |
+| Data | on the device, synced to your Supabase | on the device (file in the app's private storage) |
+| Reminders | none yet | native local notifications, no server involved |
+| Exercise photos | served next to the app (`ex/`) | loaded from the jsDelivr CDN |
 
-The mobile flavor never talks to a backend: no sign-in screen, no sync, no telemetry.
 State is mirrored from `localStorage` into `opengym-state.json` in the app's private data
-directory on every change (iOS is allowed to evict WebView storage under pressure — the
-file mirror is the durable copy and is restored on launch). Backups go out through the
-OS share sheet instead of a browser download.
+directory on every change (iOS is allowed to evict WebView storage under pressure — the file
+mirror is the durable copy and is restored on launch; the filename is kept so an update never
+loses an existing install's data). Backups go out through the OS share sheet instead of a
+browser download.
 
 ## Prerequisites
 
@@ -85,8 +85,8 @@ apksigner sign --ks my.keystore --ks-key-alias opengym --out openGym.apk aligned
 Apple does not allow installing apps outside the App Store, so there is no `.ipa` download
 that would simply install. Your free options:
 
-- **Self-host + PWA** (recommended): open your instance in Safari → Share → *Add to Home
-  Screen*. Full-screen app, no expiry, plus sync and passkeys.
+- **PWA** (recommended): open the app in Safari → Share → *Add to Home Screen*. Full-screen,
+  no expiry, and accounts and sync work exactly as they do in the browser.
 - **Xcode free signing:** open `ios/` in Xcode with a free Apple ID as the team and run it
   onto your own iPhone. Apple expires the signature after 7 days; re-run from Xcode to renew.
 - **AltStore:** automates that 7-day re-signing over Wi-Fi via a Mac companion app.

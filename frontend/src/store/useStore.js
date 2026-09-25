@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { api } from '../lib/api.js'
 import { localTZ } from '../lib/format.js'
 import { LANGS } from '../lib/i18n.js'
 import { registerCustom } from '../lib/exercises.js'
@@ -94,9 +93,9 @@ export const useStore = create((set, get) => {
     S: (() => { const s = loadState(); registerCustom(s.customEx); return s })(),
     user: (() => { try { return JSON.parse(localStorage.getItem('gym_user')) || null } catch { return null } })(),
     ready: false,
-    // Instance capabilities from GET /api/config. `config.coach` is present only when the
-    // owner has both enabled the Coach and connected a provider — every Coach entry point in
-    // the app hangs off it, so an unconfigured instance renders exactly what it always did.
+    // Whether the Coach function is deployed and configured on this instance, answered once
+    // at boot. Every Coach entry point in the app hangs off it, so an instance without it
+    // renders exactly what it did before the feature existed.
     config: null,
 
     // Mutate a draft of S via producer fn, then persist + schedule sync.
@@ -120,15 +119,14 @@ export const useStore = create((set, get) => {
       if (!get().user) return
       clearTimeout(pushTm)
       try {
-        if (SUPABASE) await pushRemoteState(get().user.id, get().S)
-        else await api('/api/data', { method: 'PUT', body: JSON.stringify({ state: get().S }) })
+        await pushRemoteState(get().user.id, get().S)
         localStorage.removeItem('gym_dirty')
       }
       catch (e) { localStorage.setItem('gym_dirty', '1') }
     },
     async pullState() {
       try {
-        const state = SUPABASE ? await pullRemoteState() : (await api('/api/data')).state
+        const state = await pullRemoteState()
         const S = get().S
         const dirty = localStorage.getItem('gym_dirty') === '1'
         if (state && (!hasData(S) || ((state._ts || 0) >= (S._ts || 0) && !dirty))) {
@@ -146,10 +144,7 @@ export const useStore = create((set, get) => {
     async signOut() {
       await get().pushState()
       if (localStorage.getItem('gym_dirty') === '1') throw new Error('unsynced')
-      try {
-        if (SUPABASE) await sb.auth.signOut({ scope: 'local' })
-        else await api('/api/logout', { method: 'POST', body: '{}' })
-      } catch (e) { /* */ }
+      try { await sb.auth.signOut({ scope: 'local' }) } catch (e) { /* the local copy goes either way */ }
       clearLocalSession()
     },
 
@@ -161,10 +156,8 @@ export const useStore = create((set, get) => {
     async signOutAll() {
       await get().pushState()   // never throws — stores gym_dirty and moves on when offline
       if (localStorage.getItem('gym_dirty') === '1') throw new Error('unsynced')
-      if (SUPABASE) {
-        const { error } = await sb.auth.signOut({ scope: 'global' })
-        if (error) throw sbError(error)
-      } else await api('/api/logout/all', { method: 'POST', body: '{}' })
+      const { error } = await sb.auth.signOut({ scope: 'global' })
+      if (error) throw sbError(error)
       clearLocalSession()
     },
 
@@ -208,11 +201,13 @@ export const useStore = create((set, get) => {
       persist(Object.assign(clone(DEF), buildDemoState()), false)
     },
 
-    // Boot: ask the server who we are, then pull.
+    /**
+     * Boot. With Supabase configured the app restores the session and syncs; without it (the
+     * mobile and demo builds, or a plain local build) everything stays on the device.
+     */
     async boot() {
-      // Mobile build: restore from the file mirror (the durable copy; localStorage may have been
-      // evicted since the last run). Without Supabase there is no backend: go straight in as the
-      // local profile. With it, carry on to the account check below.
+      // Mobile build: restore from the file mirror — the durable copy, since localStorage may
+      // have been evicted since the last run.
       if (MOBILE) {
         const saved = await nativeLoad()
         const S = get().S
@@ -222,13 +217,8 @@ export const useStore = create((set, get) => {
           nativeSave(S)   // first run after an update from a file-less version: seed the mirror
         }
         syncReminder(get().S)
-        if (!SUPABASE) {
-          get().setGuest(true)
-          set({ ready: true })
-          return
-        }
       }
-      // Demo build (GitHub Pages): no backend at all — seed once, stay in guest mode.
+      // Demo build (static hosting): no backend at all — seed once, stay in guest mode.
       if (DEMO) {
         if (!localStorage.getItem(DEMO_SEEDED)) {
           localStorage.setItem(DEMO_SEEDED, '1')
@@ -238,50 +228,38 @@ export const useStore = create((set, get) => {
         set({ ready: true })
         return
       }
-      if (SUPABASE) {
-        // A session revoked elsewhere ("sign out everywhere", account deleted) ends here on the
-        // next token refresh. Only the account link is dropped — the data stays on the device,
-        // like the passkey server's 401 path, so nothing unsynced is lost.
-        sb.auth.onAuthStateChange(event => {
-          if (event === 'SIGNED_OUT' && get().user) get().setUser(null)
-        })
-        try {
-          // Offline, this returns the stored session, so the app opens signed in and syncs later.
-          const { data: { session } } = await sb.auth.getSession()
-          if (session) {
-            get().setUser(userFrom(session.user))
-            await get().pullState()
-            // Is the Coach deployed and configured on this instance? One call, once per
-            // session; every Coach entry point hangs off the answer, so an instance without it
-            // renders exactly what it did before the feature existed.
-            try {
-              const st = await callCoach({ action: 'status' })
-              if (st?.enabled) set({ config: { coach: { enabled: true } } })
-            } catch (e) { /* not deployed — the feature stays hidden */ }
-            const tz = localTZ()
-            if (get().S.reminder?.on && get().S.reminder.tz !== tz) {
-              get().update(s => { s.reminder = { ...s.reminder, tz } })
-            }
-          } else if (get().user) get().setUser(null)
-        } catch (e) { /* keep local */ }
+      if (!SUPABASE) {
+        get().setGuest(true)
         set({ ready: true })
         return
       }
-      // Instance capabilities are public and needed whether or not anyone is signed in.
-      try { set({ config: await api('/api/config') }) } catch (e) { /* offline — assume nothing extra */ }
+      // A session revoked elsewhere ("sign out everywhere", account deleted) ends here on the
+      // next token refresh. Only the account link is dropped — the data stays on the device, so
+      // nothing unsynced is lost.
+      sb.auth.onAuthStateChange(event => {
+        if (event === 'SIGNED_OUT' && get().user) get().setUser(null)
+      })
       try {
-        const me = await api('/api/me')
-        get().setUser(me.user)
-        await get().pullState()
-        // Re-stamp the reminder's timezone on every load — keeps it correct if you're travelling,
-        // without needing to revisit Settings.
-        const tz = localTZ()
-        if (get().S.reminder?.on && get().S.reminder.tz !== tz) {
-          get().update(s => { s.reminder = { ...s.reminder, tz } })
-        }
-      } catch (e) {
-        if (e.status === 401) get().setUser(null)
-      }
+        // Offline, this returns the stored session, so the app opens signed in and syncs later.
+        const { data: { session } } = await sb.auth.getSession()
+        if (session) {
+          get().setUser(userFrom(session.user))
+          await get().pullState()
+          // Is the Coach deployed and configured on this instance? One call, once per session;
+          // every Coach entry point hangs off the answer, so an instance without it renders
+          // exactly what it did before the feature existed.
+          try {
+            const st = await callCoach({ action: 'status' })
+            if (st?.enabled) set({ config: { coach: { enabled: true } } })
+          } catch (e) { /* not deployed — the feature stays hidden */ }
+          // Re-stamp the reminder's timezone on every load — keeps it correct if you're
+          // travelling, without needing to revisit Settings.
+          const tz = localTZ()
+          if (get().S.reminder?.on && get().S.reminder.tz !== tz) {
+            get().update(s => { s.reminder = { ...s.reminder, tz } })
+          }
+        } else if (get().user) get().setUser(null)
+      } catch (e) { /* keep local */ }
       set({ ready: true })
     }
   }

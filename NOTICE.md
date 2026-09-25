@@ -1,29 +1,24 @@
 # Third-party notices
 
-openGym — Copyright (C) 2026 Duarte Santos.
-openGym's own code is licensed under the **GNU AGPL v3.0** (see [LICENSE](LICENSE)).
+KeishaGym is a fork of **openGym** — Copyright (C) 2026 Duarte Santos — and carries its
+licence: the code is **GNU AGPL v3.0** (see [LICENSE](LICENSE)).
 
 ## App store exception
 
 As an additional permission under section 7 of the AGPL v3.0, the copyright holder permits
-distribution of the openGym mobile application through app store platforms (such as the
+distribution of the mobile application through app store platforms (such as the
 Apple App Store and Google Play) whose terms of service would otherwise be incompatible
 with the AGPL, provided the corresponding source code remains available under the AGPL at
 the project repository. This permission applies to the distribution channel only and does
 not otherwise limit the license.
 
-## Bundled AI provider CLI
+## AI provider
 
-The api image installs the [**Claude Code CLI**](https://github.com/anthropics/claude-code)
-(`@anthropic-ai/claude-code`, pinned in `api/Dockerfile`) so the optional AI Coach works
-without the instance owner installing anything. openGym invokes it as a separate process at
-runtime and does not link against it or include its source; this is mere aggregation, and
-openGym's own AGPL v3.0 licensing is unchanged.
-
-The CLI is distributed under its own terms, and using it requires an account with the
-provider. Both are matters between the instance owner and Anthropic — openGym ships no
-credentials and asks its users for none. Instances that would rather not carry it can leave
-the Coach disabled (the default) or set `COACH_DISABLED=1`.
+The optional AI Coach calls the **Anthropic API** from a Supabase Edge Function, under an API
+key the instance owner supplies. Nothing of Anthropic's is bundled or linked here, and
+KeishaGym ships no credentials and asks its users for none. Using the feature is a matter
+between the instance owner and Anthropic; instances that would rather not carry it simply do
+not deploy the function.
 
 ## Body diagram geometry
 
