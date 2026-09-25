@@ -11,7 +11,10 @@ export const LANGS = {
   pt: 'Português', pl: 'Polski', tr: 'Türkçe', ru: 'Русский', zh: '中文',
   ko: '한국어', hi: 'हिन्दी'
 }
-export const INSTR_LANGS = ['en', 'es', 'fr', 'it', 'tr', 'ru', 'zh', 'hi', 'pl', 'ko']
+// Exercise instructions come with the public-domain dataset, which is English-only; the rest
+// of the UI is translated as usual. A future pass can regenerate per-language packs into
+// src/instr/ and list them here again.
+export const INSTR_LANGS = ['en']
 const DATE_LOCALES = {
   en: 'en-GB', de: 'de-DE', es: 'es-ES', fr: 'fr-FR', it: 'it-IT', pt: 'pt-PT',
   pl: 'pl-PL', tr: 'tr-TR', ru: 'ru-RU', zh: 'zh-CN', ko: 'ko-KR', hi: 'hi-IN'

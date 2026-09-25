@@ -203,7 +203,6 @@ export default {
   'Delete routine?': '루틴을 삭제할까요?',
   '“{0}” and its exercises will be removed.': '"{0}"과(와) 그 운동들이 삭제됩니다.',
   'Delete routine': '루틴 삭제',
-  '{0} exercises with animations': '애니메이션이 있는 운동 {0}개',
   'Search…': '검색…',
   'No workouts yet.': '아직 운동 기록이 없어요.',
   'Starter plan loaded — Mon Push · Wed Pull · Fri Legs': '스타터 계획 불러옴 — 월 푸시 · 수 풀 · 금 레그',
@@ -332,9 +331,9 @@ export default {
   // --- custom exercises (#11) ---
   'Create your own exercise': '나만의 운동 만들기',
   'Edit custom exercise': '커스텀 운동 편집',
-  'Name it and pick a body part — it behaves like any other exercise, just without an animation.': '이름을 정하고 부위를 선택하세요 — 애니메이션만 없을 뿐 다른 운동과 똑같이 사용됩니다.',
+  "Name it and pick a body part — it behaves like any other exercise, just without photos.": "이름을 정하고 부위를 고르세요 — 다른 운동과 똑같이 작동하며, 사진만 없습니다.",
   'Exercise name': '운동 이름',
-  'name + body part, no animation': '이름 + 부위, 애니메이션 없음',
+  "name + body part, no photos": "이름 + 부위, 사진 없음",
   'Create exercise': '운동 만들기',
   'Give it a name': '이름을 입력하세요',
   'Pick a body part': '부위를 선택하세요',
@@ -725,4 +724,13 @@ export default {
   "Could not delete the account — try again when you’re online.": "계정을 삭제하지 못했습니다 — 온라인 상태에서 다시 시도하세요.",
   "Signs this account out on every device, including this one. Sign in again anytime with your email and password.": "이 기기를 포함한 모든 기기에서 이 계정을 로그아웃합니다. 언제든 이메일과 비밀번호로 다시 로그인할 수 있습니다.",
   "Your latest changes aren’t synced yet — you stay signed in. Try again once you’re online.": "최근 변경 사항이 아직 동기화되지 않았습니다 — 로그인 상태가 유지됩니다. 온라인 상태에서 다시 시도하세요.",
+  // exercise dataset vocabulary
+  "machine": "머신",
+  "other": "기타",
+  "foam roller": "폼롤러",
+  "middle back": "중간 등",
+  "beginner": "초급",
+  "intermediate": "중급",
+  "expert": "고급",
+  "{0} exercises with photo demos": "사진 데모가 있는 운동 {0}개",
 }

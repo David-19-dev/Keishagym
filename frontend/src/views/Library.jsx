@@ -23,7 +23,7 @@ export default function Library() {
   const f = eqOn ? base.filter(e => e.eq === eqOn) : base
 
   return <>
-    <div className="hdr"><div><h1>{t('Exercises')}</h1><div className="sub">{t('{0} exercises with animations', EXDB.length)}</div></div></div>
+    <div className="hdr"><div><h1>{t('Exercises')}</h1><div className="sub">{t('{0} exercises with photo demos', EXDB.length)}</div></div></div>
     <div className="search" style={{ marginBottom: 10 }}><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
       <input className="input" placeholder={t('Search…')} value={q} onChange={e => { setQ(e.target.value); setShown(40) }} /></div>
     <div className="chips" style={{ marginBottom: eqOpts.length > 1 ? 8 : 12 }}>
@@ -37,7 +37,7 @@ export default function Library() {
     <div className="list">
       <div className="item" onClick={() => customExSheet(null, ex => exerciseDetailSheet(ex), q.trim())}>
         <div className="thumb thumb-x"><Icon name="sparkles" /></div>
-        <div className="grow"><div className="tt">{t('Create your own exercise')}</div><div className="ss">{t('name + body part, no animation')}</div></div><Icon name="plus" className="chev" />
+        <div className="grow"><div className="tt">{t('Create your own exercise')}</div><div className="ss">{t('name + body part, no photos')}</div></div><Icon name="plus" className="chev" />
       </div>
       {f.slice(0, shown).map(e => {
         const best = bestWeightFor(S, e.id)

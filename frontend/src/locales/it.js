@@ -203,7 +203,6 @@ export default {
   'Delete routine?': 'Eliminare routine?',
   '“{0}” and its exercises will be removed.': '«{0}» e i suoi esercizi verranno rimossi.',
   'Delete routine': 'Elimina routine',
-  '{0} exercises with animations': '{0} esercizi con animazioni',
   'Search…': 'Cerca…',
   'No workouts yet.': 'Ancora nessun allenamento.',
   'Starter plan loaded — Mon Push · Wed Pull · Fri Legs': 'Piano iniziale caricato — Lun Push · Mer Pull · Ven Gambe',
@@ -332,9 +331,9 @@ export default {
   // --- custom exercises (#11) ---
   'Create your own exercise': 'Crea il tuo esercizio',
   'Edit custom exercise': 'Modifica esercizio personalizzato',
-  'Name it and pick a body part — it behaves like any other exercise, just without an animation.': 'Dagli un nome e scegli una parte del corpo — funziona come qualsiasi altro esercizio, solo senza animazione.',
+  "Name it and pick a body part — it behaves like any other exercise, just without photos.": "Dagli un nome e scegli una parte del corpo — funziona come qualsiasi altro esercizio, solo senza foto.",
   'Exercise name': 'Nome esercizio',
-  'name + body part, no animation': 'nome + parte del corpo, senza animazione',
+  "name + body part, no photos": "nome + parte del corpo, senza foto",
   'Create exercise': 'Crea esercizio',
   'Give it a name': 'Dagli un nome',
   'Pick a body part': 'Scegli una parte del corpo',
@@ -725,4 +724,13 @@ export default {
   "Could not delete the account — try again when you’re online.": "Impossibile eliminare l’account — riprova quando sei online.",
   "Signs this account out on every device, including this one. Sign in again anytime with your email and password.": "Disconnette questo account su tutti i dispositivi, compreso questo. Accedi di nuovo quando vuoi con email e password.",
   "Your latest changes aren’t synced yet — you stay signed in. Try again once you’re online.": "Le ultime modifiche non sono ancora sincronizzate — resti connesso. Riprova quando sei online.",
+  // exercise dataset vocabulary
+  "machine": "Macchina",
+  "other": "Altro",
+  "foam roller": "Foam roller",
+  "middle back": "Dorso centrale",
+  "beginner": "Principiante",
+  "intermediate": "Intermedio",
+  "expert": "Esperto",
+  "{0} exercises with photo demos": "{0} esercizi con demo fotografica",
 }

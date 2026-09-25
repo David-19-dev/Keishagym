@@ -1,4 +1,5 @@
 import { EXDB } from './exercises-data.js'
+import VIDEOS from './exercise-videos.js'
 import { t } from './i18n.js'
 
 export { EXDB }
@@ -26,13 +27,19 @@ export function registerCustom(list) {
 // Full searchable catalogue — customs first so your own exercises are easy to find.
 export const allExercises = st => [...(st.customEx || []), ...EXDB]
 
-// Media normally sits next to the app (img/ and gif/, mounted into the web container).
-// A build can point them somewhere else — the demo build pulls them off a CDN instead of
-// shipping ~140 MB of images into the deployment.
-const IMG_BASE = import.meta.env.VITE_IMG_BASE || 'img/'
-const GIF_BASE = import.meta.env.VITE_GIF_BASE || 'gif/'
-export const imgSrc = ex => IMG_BASE + ex.img
-export const gifSrc = ex => GIF_BASE + ex.gif
+// Every exercise ships two photos — the start and the end of the movement — which the app
+// alternates to show the motion (components/Media.jsx). They normally sit next to the app in
+// ex/ (mounted into the web container); a build can point them somewhere else, which is how
+// the mobile and demo builds pull them off a CDN instead of shipping ~80 MB.
+const EX_BASE = import.meta.env.VITE_EX_BASE || 'ex/'
+// [start, end] — empty for a custom exercise, which has no photos by design (issue #11).
+export const frames = ex => (ex?.fr || []).map(f => EX_BASE + f)
+export const stillSrc = ex => (ex?.fr?.length ? EX_BASE + ex.fr[0] : null)
+
+// A 3D demo video, for the exercises that have one (see exercise-videos.js). Everything else
+// keeps the two photos, so the library can gain animations a few at a time.
+const VID_BASE = import.meta.env.VITE_VID_BASE || 'vid/'
+export const videoSrc = ex => (ex && VIDEOS[ex.id] ? VID_BASE + VIDEOS[ex.id] : null)
 
 // Cardio exercises log time + speed instead of weight × reps.
 export const isCardio = idOrEx => (typeof idOrEx === 'string' ? EXIDX[idOrEx] : idOrEx)?.bp === 'cardio'
@@ -42,4 +49,4 @@ export const isCardio = idOrEx => (typeof idOrEx === 'string' ? EXIDX[idOrEx] : 
 // render. A placeholder keeps it visible (and removable) instead of taking the whole view
 // down on the first `ex.n`.
 export const exOr = id => EXIDX[id] ||
-  { id, n: t('Unknown exercise'), bp: '', tg: '', eq: '', sm: [], st: [], missing: true }
+  { id, n: t('Unknown exercise'), bp: '', tg: '', eq: '', sm: [], st: [], fr: [], missing: true }

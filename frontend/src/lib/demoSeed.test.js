@@ -2,7 +2,7 @@
 // exercise the stats it is there to show off — including the effort card, which renders as
 // dashes on a history that is rated too thinly or not at all.
 import { describe, it, expect } from 'vitest'
-import { buildDemoState } from './demoSeed.js'
+import { buildDemoState, NEVER_RATED } from './demoSeed.js'
 import {
   effortSummary, effortWeeks, effortHistogram, hasEffort, displayScale, avgRir,
   rirOf, isHardSet, MIN_RATED, HARD_RIR
@@ -39,11 +39,16 @@ describe('demo seed — effort', () => {
 
   it('leaves one exercise unrated throughout, so the per-exercise Effort toggle is absent for it', () => {
     const rated = {}
-    eachSet((s, w, e) => { rated[e.id] = (rated[e.id] || 0) + (rirOf(s) != null ? 1 : 0) })
+    // a held exercise is never rated at all (no reps to leave in the tank), so the claim is
+    // about the ones that log reps
+    eachSet((s, w, e) => {
+      if (modeOf({ ...(e.target || {}), id: e.id }) !== 'reps') return
+      rated[e.id] = (rated[e.id] || 0) + (rirOf(s) != null ? 1 : 0)
+    })
     const ids = Object.keys(rated)
-    expect(ids.filter(id => rated[id] === 0)).toEqual(['0605'])
+    expect(ids.filter(id => rated[id] === 0)).toEqual([NEVER_RATED])
     // …while the rest carry enough rated sessions for a curve of their own (needs 3).
-    ids.filter(id => id !== '0605').forEach(id => {
+    ids.filter(id => id !== NEVER_RATED).forEach(id => {
       const sessions = S.workouts.filter(w => {
         const en = w.entries.find(e => e.id === id)
         return en && avgRir(en.sets.filter(s => s.done)) != null

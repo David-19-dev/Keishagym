@@ -3,11 +3,27 @@
 import { uid } from './format.js'
 
 const SPEC = [
-  ['Push Day', 'barbell', [['0025', 4, 8], ['0047', 3, 10], ['0426', 3, 10], ['0334', 3, 12], ['0241', 3, 12], ['0251', 3, 10]]],
-  ['Pull Day', 'pullup', [['2330', 4, 10], ['0027', 4, 8], ['1323', 3, 10], ['0031', 3, 10], ['0313', 3, 12]]],
-  ['Leg Day', 'legs', [['0043', 4, 8], ['0085', 3, 10], ['0739', 3, 12], ['0585', 3, 12], ['0586', 3, 12], ['0605', 4, 15]]]
+  ['Push Day', 'barbell', [
+    ['Barbell_Bench_Press_-_Medium_Grip', 4, 8], ['Incline_Dumbbell_Press', 3, 10],
+    ['Barbell_Shoulder_Press', 3, 10], ['Side_Lateral_Raise', 3, 12],
+    ['Triceps_Pushdown_-_Rope_Attachment', 3, 12], ['Dips_-_Triceps_Version', 3, 10],
+  ]],
+  ['Pull Day', 'pullup', [
+    ['Pullups', 4, 10], ['Bent_Over_Barbell_Row', 4, 8], ['Wide-Grip_Lat_Pulldown', 3, 10],
+    ['Face_Pull', 3, 12], ['Barbell_Curl', 3, 10], ['Hammer_Curls', 3, 12],
+  ]],
+  ['Leg Day', 'legs', [
+    ['Barbell_Squat', 4, 8], ['Romanian_Deadlift', 3, 10], ['Leg_Press', 3, 12],
+    ['Seated_Leg_Curl', 3, 12], ['Standing_Calf_Raises', 4, 15], ['Plank', 3, 45, 'time'],
+  ]],
 ]
-
 // Fresh routine objects (new ids) — [push, pull, legs].
 export const starterRoutines = () =>
-  SPEC.map(([name, emoji, list]) => ({ id: uid(), name, emoji, ex: list.map(([id, sets, reps]) => ({ id, sets, reps, weight: 0 })) }))
+  SPEC.map(([name, emoji, list]) => ({
+    id: uid(), name, emoji,
+    // a fourth entry sets the logging mode — the plank is held, so its number is seconds,
+    // not reps (history.js modeOf / buildSets)
+    ex: list.map(([id, sets, n, mode]) => (mode === 'time'
+      ? { id, sets, sec: n, weight: 0, mode }
+      : { id, sets, reps: n, weight: 0 })),
+  }))

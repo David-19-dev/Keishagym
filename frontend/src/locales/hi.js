@@ -203,7 +203,6 @@ export default {
   'Delete routine?': 'रूटीन हटाएँ?',
   '“{0}” and its exercises will be removed.': '"{0}" और उसके व्यायाम हटा दिए जाएँगे।',
   'Delete routine': 'रूटीन हटाएँ',
-  '{0} exercises with animations': 'एनिमेशन के साथ {0} व्यायाम',
   'Search…': 'खोजें…',
   'No workouts yet.': 'अभी कोई वर्कआउट नहीं।',
   'Starter plan loaded — Mon Push · Wed Pull · Fri Legs': 'स्टार्टर प्लान लोड हुआ — सोम पुश · बुध पुल · शुक्र लेग्स',
@@ -332,9 +331,9 @@ export default {
   // --- custom exercises (#11) ---
   'Create your own exercise': 'अपनी एक्सरसाइज़ बनाएं',
   'Edit custom exercise': 'कस्टम एक्सरसाइज़ संपादित करें',
-  'Name it and pick a body part — it behaves like any other exercise, just without an animation.': 'नाम दें और बॉडी पार्ट चुनें — यह बाकी एक्सरसाइज़ की तरह ही काम करती है, बस एनिमेशन नहीं होता।',
+  "Name it and pick a body part — it behaves like any other exercise, just without photos.": "नाम दें और बॉडी पार्ट चुनें — यह बाकी एक्सरसाइज़ की तरह ही काम करती है, बस फ़ोटो नहीं होंगी।",
   'Exercise name': 'एक्सरसाइज़ का नाम',
-  'name + body part, no animation': 'नाम + बॉडी पार्ट, बिना एनिमेशन',
+  "name + body part, no photos": "नाम + बॉडी पार्ट, बिना फ़ोटो",
   'Create exercise': 'एक्सरसाइज़ बनाएं',
   'Give it a name': 'कोई नाम दें',
   'Pick a body part': 'एक बॉडी पार्ट चुनें',
@@ -725,4 +724,13 @@ export default {
   "Could not delete the account — try again when you’re online.": "खाता नहीं हटाया जा सका — ऑनलाइन होने पर फिर से कोशिश करें।",
   "Signs this account out on every device, including this one. Sign in again anytime with your email and password.": "इस खाते को इस डिवाइस सहित हर डिवाइस से साइन आउट करता है। कभी भी ईमेल और पासवर्ड से फिर साइन इन करें।",
   "Your latest changes aren’t synced yet — you stay signed in. Try again once you’re online.": "आपके हाल के बदलाव अभी सिंक नहीं हुए हैं — आप साइन इन रहेंगे। ऑनलाइन होने पर फिर से कोशिश करें।",
+  // exercise dataset vocabulary
+  "machine": "मशीन",
+  "other": "अन्य",
+  "foam roller": "फोम रोलर",
+  "middle back": "मध्य पीठ",
+  "beginner": "शुरुआती",
+  "intermediate": "मध्यम",
+  "expert": "विशेषज्ञ",
+  "{0} exercises with photo demos": "{0} व्यायाम, फ़ोटो डेमो के साथ",
 }

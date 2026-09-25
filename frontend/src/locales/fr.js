@@ -203,7 +203,6 @@ export default {
   'Delete routine?': 'Supprimer la routine ?',
   '“{0}” and its exercises will be removed.': '« {0} » et ses exercices seront supprimés.',
   'Delete routine': 'Supprimer la routine',
-  '{0} exercises with animations': '{0} exercices avec animations',
   'Search…': 'Rechercher…',
   'No workouts yet.': 'Aucune séance pour l’instant.',
   'Starter plan loaded — Mon Push · Wed Pull · Fri Legs': 'Plan de départ chargé — Lun Push · Mer Pull · Ven Jambes',
@@ -332,9 +331,9 @@ export default {
   // --- custom exercises (#11) ---
   'Create your own exercise': 'Créer votre propre exercice',
   'Edit custom exercise': 'Modifier l’exercice personnalisé',
-  'Name it and pick a body part — it behaves like any other exercise, just without an animation.': 'Nommez-le et choisissez une partie du corps — il se comporte comme tout autre exercice, mais sans animation.',
+  "Name it and pick a body part — it behaves like any other exercise, just without photos.": "Donne-lui un nom et choisis une partie du corps — il fonctionne comme les autres exercices, simplement sans photos.",
   'Exercise name': 'Nom de l’exercice',
-  'name + body part, no animation': 'nom + partie du corps, sans animation',
+  "name + body part, no photos": "nom + partie du corps, sans photos",
   'Create exercise': 'Créer l’exercice',
   'Give it a name': 'Donnez-lui un nom',
   'Pick a body part': 'Choisissez une partie du corps',
@@ -725,4 +724,13 @@ export default {
   "Could not delete the account — try again when you’re online.": "Impossible de supprimer le compte — réessaie une fois en ligne.",
   "Signs this account out on every device, including this one. Sign in again anytime with your email and password.": "Déconnecte ce compte sur tous les appareils, y compris celui-ci. Reconnecte-toi quand tu veux avec ton e-mail et ton mot de passe.",
   "Your latest changes aren’t synced yet — you stay signed in. Try again once you’re online.": "Tes dernières modifications ne sont pas encore synchronisées — tu restes connecté. Réessaie une fois en ligne.",
+  // exercise dataset vocabulary
+  "machine": "Machine",
+  "other": "Autre",
+  "foam roller": "Rouleau de massage",
+  "middle back": "Milieu du dos",
+  "beginner": "Débutant",
+  "intermediate": "Intermédiaire",
+  "expert": "Expert",
+  "{0} exercises with photo demos": "{0} exercices avec démo photo",
 }

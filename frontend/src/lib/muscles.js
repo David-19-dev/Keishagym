@@ -39,6 +39,7 @@ const ALIAS = {
   quads: 'quadriceps', forearms: 'forearm', hamstrings: 'hamstring', spine: 'lower-back',
   traps: 'trapezius', adductors: 'adductors', 'serratus anterior': 'serratus',
   abductors: 'gluteal', 'levator scapulae': 'trapezius', 'cardiovascular system': null,
+  'middle back': 'upper-back', neck: null,
   // secondaries
   shoulders: 'deltoids', deltoids: 'deltoids', 'rear deltoids': 'deltoids',
   'rotator cuff': 'deltoids', quadriceps: 'quadriceps', core: 'abs', abdominals: 'abs',

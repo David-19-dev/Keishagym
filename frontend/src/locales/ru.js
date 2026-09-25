@@ -203,7 +203,6 @@ export default {
   'Delete routine?': 'Удалить программу?',
   '“{0}” and its exercises will be removed.': '«{0}» и её упражнения будут удалены.',
   'Delete routine': 'Удалить программу',
-  '{0} exercises with animations': '{0} упражнений с анимациями',
   'Search…': 'Поиск…',
   'No workouts yet.': 'Тренировок пока нет.',
   'Starter plan loaded — Mon Push · Wed Pull · Fri Legs': 'Стартовый план загружен — Пн Push · Ср Pull · Пт Ноги',
@@ -332,9 +331,9 @@ export default {
   // --- custom exercises (#11) ---
   'Create your own exercise': 'Создать своё упражнение',
   'Edit custom exercise': 'Изменить своё упражнение',
-  'Name it and pick a body part — it behaves like any other exercise, just without an animation.': 'Задайте название и выберите часть тела — оно работает как любое другое упражнение, только без анимации.',
+  "Name it and pick a body part — it behaves like any other exercise, just without photos.": "Дайте название и выберите часть тела — упражнение работает как любое другое, просто без фото.",
   'Exercise name': 'Название упражнения',
-  'name + body part, no animation': 'название + часть тела, без анимации',
+  "name + body part, no photos": "название + часть тела, без фото",
   'Create exercise': 'Создать упражнение',
   'Give it a name': 'Задайте название',
   'Pick a body part': 'Выберите часть тела',
@@ -725,4 +724,13 @@ export default {
   "Could not delete the account — try again when you’re online.": "Не удалось удалить аккаунт — попробуйте снова, когда будете в сети.",
   "Signs this account out on every device, including this one. Sign in again anytime with your email and password.": "Выходит из этого аккаунта на всех устройствах, включая это. Войти снова можно в любой момент по почте и паролю.",
   "Your latest changes aren’t synced yet — you stay signed in. Try again once you’re online.": "Последние изменения ещё не синхронизированы — вы остаётесь в аккаунте. Повторите, когда будете в сети.",
+  // exercise dataset vocabulary
+  "machine": "Тренажёр",
+  "other": "Другое",
+  "foam roller": "Массажный ролик",
+  "middle back": "Средняя часть спины",
+  "beginner": "Начальный",
+  "intermediate": "Средний",
+  "expert": "Продвинутый",
+  "{0} exercises with photo demos": "{0} упражнений с фотодемонстрацией",
 }

@@ -230,7 +230,8 @@ export default function Settings() {
     <div className="dim small" style={{ textAlign: 'center', marginTop: 4, lineHeight: 1.6 }}>
       <Logo size={28} /><br />
       KeishaGym · {t('free & open source (AGPL v3)')}<br />
-      based on <a href="https://github.com/DuarteSantos8/openGym" target="_blank" rel="noopener">openGym</a> by Duarte Santos · exercise data: hasaneyldrm/exercises-dataset · media © <a href="https://gymvisual.com/" target="_blank" rel="noopener">Gym visual</a>
+      based on <a href="https://github.com/DuarteSantos8/openGym" target="_blank" rel="noopener">openGym</a> by Duarte Santos<br />
+      exercises & photos: <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">free-exercise-db</a> (public domain)
     </div>
   </div>
 }

@@ -7,9 +7,13 @@ import { modeOf } from './history.js'
 // Starting weight and weekly increment per exercise of the starter plan (kg).
 // Chest dips are body-weight only here, so they log reps at 0 added weight.
 const PROG = {
-  '0025': [60, 1.25], '0047': [45, 1], '0426': [20, 0.5], '0334': [10, 0.25], '0241': [25, 0.75], '0251': [0, 0],
-  '2330': [50, 1.25], '0027': [50, 1], '1323': [45, 1], '0031': [30, 0.5], '0313': [12, 0.3],
-  '0043': [70, 1.5], '0085': [60, 1.25], '0739': [120, 3], '0585': [45, 1], '0586': [40, 1], '0605': [60, 1.5]
+  'Barbell_Bench_Press_-_Medium_Grip': [60, 1.25], Incline_Dumbbell_Press: [22.5, 0.5],
+  Barbell_Shoulder_Press: [30, 0.75], Side_Lateral_Raise: [8, 0.25],
+  'Triceps_Pushdown_-_Rope_Attachment': [25, 0.75], 'Dips_-_Triceps_Version': [0, 0],
+  Pullups: [0, 0], Bent_Over_Barbell_Row: [50, 1], 'Wide-Grip_Lat_Pulldown': [45, 1],
+  Face_Pull: [15, 0.4], Barbell_Curl: [25, 0.5], Hammer_Curls: [12, 0.3],
+  Barbell_Squat: [70, 1.5], Romanian_Deadlift: [60, 1.25], Leg_Press: [120, 3],
+  Seated_Leg_Curl: [45, 1], Standing_Calf_Raises: [60, 1.5], Plank: [0, 0],
 }
 const WEEKS = 12                       // how much history to fabricate
 const BW_FROM = 82.4, BW_TO = 78.3     // body-weight trend across those weeks
@@ -28,10 +32,10 @@ const weekTarget = wk =>
       : 2.6 - (wk - DELOAD_WEEK - 1) * 0.26
 // Leg day is trained further from failure than the upper body — deliberate, so the muscle
 // map's "hard sets" mode shows a different picture from its all-sets mode.
-const EASY = new Set(['0043', '0085', '0739', '0585', '0586'])
+const EASY = new Set(['Barbell_Squat', 'Romanian_Deadlift', 'Leg_Press', 'Seated_Leg_Curl', 'Standing_Calf_Raises'])
 // One exercise nobody ever rates: partial coverage is the normal case (rating is optional and
 // off by default), and it shows the per-exercise Effort toggle correctly staying away.
-const NEVER_RATED = '0605'
+export const NEVER_RATED = 'Standing_Calf_Raises'
 const UNRATED = 0.1                    // …plus this share of the remaining sets, at random
 // The first weeks are logged in RPE, as if they came out of another app before the profile
 // switched to RIR. A set is never rewritten (see history.js), so the stats have to average a
@@ -106,7 +110,10 @@ export function buildDemoState() {
       for (let i = 0; i < cfg.sets; i++) {
         // last set is where reps usually start slipping
         const drop = i === cfg.sets - 1 && rnd() < 0.55 ? (rnd() < 0.4 ? 2 : 1) : 0
-        const s = { w, r: Math.max(4, cfg.reps - drop), done: true }
+        // a held exercise logs the time it was held, not reps
+        const s = modeOf(cfg) === 'time'
+          ? { w, sec: Math.max(10, (cfg.sec || 45) - drop * 5), done: true }
+          : { w, r: Math.max(4, cfg.reps - drop), done: true }
         const rir = clamp(round(rir0
           + (cfg.sets - 1 - i) * 0.6      // a first set sits further from failure than a last
           - exIdx * 0.12                  // …and fatigue accumulates across the session
@@ -123,7 +130,9 @@ export function buildDemoState() {
       }
       if (w > (best[cfg.id] || 0)) { best[cfg.id] = w; prs.push(cfg.id) }
       exWeights[cfg.id] = { w: Math.max(w, exWeights[cfg.id]?.w || 0), d: iso }
-      return { id: cfg.id, sets, topW: w || null }
+      // a real session records the routine's config with the entry (sheets.jsx) — the demo has
+      // to as well, or a held exercise reads back as one logged in reps
+      return { id: cfg.id, sets, topW: w || null, target: { ...cfg } }
     })
 
     const bw = bodyweight.length ? bodyweight[bodyweight.length - 1].w : BW_FROM
@@ -134,7 +143,7 @@ export function buildDemoState() {
       entries,
       prs: weekIdx === 0 ? [] : prs   // the very first session isn't a PR party
     }
-    w.vol = entries.reduce((v, e) => v + e.sets.reduce((n, s) => n + s.w * s.r, 0), 0)
+    w.vol = entries.reduce((v, e) => v + e.sets.reduce((n, s) => n + s.w * (s.r || 0), 0), 0)
     workouts.push(w)
   }
 

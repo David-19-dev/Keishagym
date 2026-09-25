@@ -215,7 +215,6 @@ export default {
   '“{0}” and its exercises will be removed.': '„{0}“ und ihre Übungen werden entfernt.',
   'Delete routine': 'Routine löschen',
   // --- library / history ---
-  '{0} exercises with animations': '{0} Übungen mit Animationen',
   'Search…': 'Suchen…',
   'No workouts yet.': 'Noch keine Trainings.',
   'Starter plan loaded — Mon Push · Wed Pull · Fri Legs': 'Starterplan geladen — Mo Push · Mi Pull · Fr Beine',
@@ -350,9 +349,9 @@ export default {
   // --- custom exercises (#11) ---
   'Create your own exercise': 'Eigene Übung erstellen',
   'Edit custom exercise': 'Eigene Übung bearbeiten',
-  'Name it and pick a body part — it behaves like any other exercise, just without an animation.': 'Name und Körperpartie festlegen — die Übung verhält sich wie jede andere, nur ohne Animation.',
+  "Name it and pick a body part — it behaves like any other exercise, just without photos.": "Gib ihr einen Namen und wähle eine Körperpartie — sie verhält sich wie jede andere Übung, nur ohne Fotos.",
   'Exercise name': 'Übungsname',
-  'name + body part, no animation': 'Name + Körperpartie, ohne Animation',
+  "name + body part, no photos": "Name + Körperpartie, ohne Fotos",
   'Create exercise': 'Übung erstellen',
   'Give it a name': 'Gib ihr einen Namen',
   'Pick a body part': 'Wähle eine Körperpartie',
@@ -743,4 +742,13 @@ export default {
   "Could not delete the account — try again when you’re online.": "Konto konnte nicht gelöscht werden — versuch es erneut, wenn du online bist.",
   "Signs this account out on every device, including this one. Sign in again anytime with your email and password.": "Meldet dieses Konto auf allen Geräten ab, auch auf diesem. Melde dich jederzeit wieder mit E-Mail und Passwort an.",
   "Your latest changes aren’t synced yet — you stay signed in. Try again once you’re online.": "Deine letzten Änderungen sind noch nicht synchronisiert — du bleibst angemeldet. Versuch es erneut, wenn du online bist.",
+  // exercise dataset vocabulary
+  "machine": "Maschine",
+  "other": "Sonstiges",
+  "foam roller": "Faszienrolle",
+  "middle back": "Mittlerer Rücken",
+  "beginner": "Anfänger",
+  "intermediate": "Fortgeschritten",
+  "expert": "Experte",
+  "{0} exercises with photo demos": "{0} Übungen mit Foto-Demo",
 }

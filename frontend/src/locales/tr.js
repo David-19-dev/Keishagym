@@ -203,7 +203,6 @@ export default {
   'Delete routine?': 'Rutin silinsin mi?',
   '“{0}” and its exercises will be removed.': '“{0}” ve egzersizleri kaldırılacak.',
   'Delete routine': 'Rutini sil',
-  '{0} exercises with animations': 'animasyonlu {0} egzersiz',
   'Search…': 'Ara…',
   'No workouts yet.': 'Henüz antrenman yok.',
   'Starter plan loaded — Mon Push · Wed Pull · Fri Legs': 'Başlangıç planı yüklendi — Pzt Push · Çar Pull · Cum Bacak',
@@ -332,9 +331,9 @@ export default {
   // --- custom exercises (#11) ---
   'Create your own exercise': 'Kendi egzersizini oluştur',
   'Edit custom exercise': 'Özel egzersizi düzenle',
-  'Name it and pick a body part — it behaves like any other exercise, just without an animation.': 'Bir ad ver ve bölge seç — animasyon dışında diğer egzersizler gibi çalışır.',
+  "Name it and pick a body part — it behaves like any other exercise, just without photos.": "Bir ad ver ve vücut bölgesi seç — diğer egzersizler gibi çalışır, sadece fotoğrafsız.",
   'Exercise name': 'Egzersiz adı',
-  'name + body part, no animation': 'ad + vücut bölgesi, animasyonsuz',
+  "name + body part, no photos": "ad + vücut bölgesi, fotoğrafsız",
   'Create exercise': 'Egzersiz oluştur',
   'Give it a name': 'Bir ad ver',
   'Pick a body part': 'Bir vücut bölgesi seç',
@@ -725,4 +724,13 @@ export default {
   "Could not delete the account — try again when you’re online.": "Hesap silinemedi — çevrimiçi olduğunda tekrar dene.",
   "Signs this account out on every device, including this one. Sign in again anytime with your email and password.": "Bu hesabın oturumunu bu cihaz dahil tüm cihazlarda kapatır. İstediğin zaman e-posta ve şifrenle yeniden giriş yapabilirsin.",
   "Your latest changes aren’t synced yet — you stay signed in. Try again once you’re online.": "Son değişikliklerin henüz senkronize edilmedi — oturumun açık kalıyor. Çevrimiçi olduğunda tekrar dene.",
+  // exercise dataset vocabulary
+  "machine": "Makine",
+  "other": "Diğer",
+  "foam roller": "Köpük rulo",
+  "middle back": "Orta sırt",
+  "beginner": "Başlangıç",
+  "intermediate": "Orta",
+  "expert": "İleri",
+  "{0} exercises with photo demos": "{0} egzersiz, fotoğraflı gösterimle",
 }

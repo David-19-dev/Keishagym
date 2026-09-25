@@ -203,7 +203,6 @@ export default {
   'Delete routine?': '¿Eliminar rutina?',
   '“{0}” and its exercises will be removed.': '«{0}» y sus ejercicios se eliminarán.',
   'Delete routine': 'Eliminar rutina',
-  '{0} exercises with animations': '{0} ejercicios con animaciones',
   'Search…': 'Buscar…',
   'No workouts yet.': 'Aún no hay entrenamientos.',
   'Starter plan loaded — Mon Push · Wed Pull · Fri Legs': 'Plan inicial cargado — Lun Push · Mié Pull · Vie Piernas',
@@ -332,9 +331,9 @@ export default {
   // --- custom exercises (#11) ---
   'Create your own exercise': 'Crea tu propio ejercicio',
   'Edit custom exercise': 'Editar ejercicio propio',
-  'Name it and pick a body part — it behaves like any other exercise, just without an animation.': 'Ponle nombre y elige una parte del cuerpo — funciona como cualquier otro ejercicio, solo que sin animación.',
+  "Name it and pick a body part — it behaves like any other exercise, just without photos.": "Ponle un nombre y elige una parte del cuerpo: funciona como cualquier otro ejercicio, solo que sin fotos.",
   'Exercise name': 'Nombre del ejercicio',
-  'name + body part, no animation': 'nombre + parte del cuerpo, sin animación',
+  "name + body part, no photos": "nombre + parte del cuerpo, sin fotos",
   'Create exercise': 'Crear ejercicio',
   'Give it a name': 'Ponle un nombre',
   'Pick a body part': 'Elige una parte del cuerpo',
@@ -725,4 +724,13 @@ export default {
   "Could not delete the account — try again when you’re online.": "No se pudo eliminar la cuenta — inténtalo de nuevo cuando tengas conexión.",
   "Signs this account out on every device, including this one. Sign in again anytime with your email and password.": "Cierra la sesión de esta cuenta en todos los dispositivos, incluido este. Vuelve a entrar cuando quieras con tu correo y contraseña.",
   "Your latest changes aren’t synced yet — you stay signed in. Try again once you’re online.": "Tus últimos cambios aún no se han sincronizado: sigues con la sesión iniciada. Vuelve a intentarlo cuando tengas conexión.",
+  // exercise dataset vocabulary
+  "machine": "Máquina",
+  "other": "Otro",
+  "foam roller": "Rodillo de espuma",
+  "middle back": "Espalda media",
+  "beginner": "Principiante",
+  "intermediate": "Intermedio",
+  "expert": "Experto",
+  "{0} exercises with photo demos": "{0} ejercicios con demo en fotos",
 }

@@ -57,13 +57,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## Exercise data & media
+## Exercise data & photos
 
-The exercise names, instructions (English in `frontend/src/lib/exercises-data.js`, other
-languages in `frontend/src/instr/`, regenerated via `scripts/build-instructions.mjs`), images
-and animations (fetched into `media/` at build time) come from
-[**hasaneyldrm/exercises-dataset**](https://github.com/hasaneyldrm/exercises-dataset)
-and are **not** covered by openGym's AGPL license — they remain under that dataset's own terms.
-The media files are not distributed in this repository; they are downloaded from the upstream
-source on first run. If you redistribute openGym with the media included, review the upstream
-license first.
+The exercise names, instructions (`frontend/src/lib/exercises-data.js`, regenerated via
+`scripts/build-exercises.mjs`) and the two photos per exercise (fetched into `media/ex/` at
+build time) come from
+[**yuhonas/free-exercise-db**](https://github.com/yuhonas/free-exercise-db), released into the
+**public domain under the [Unlicense](https://unlicense.org/)**. No attribution is required and
+commercial use — including a store app — is unrestricted. The photos are not committed here;
+they are downloaded from the upstream source on first run.
+
+KeishaGym previously used hasaneyldrm/exercises-dataset, whose animations are © Gym visual and
+need a licence from [gymvisual.com](https://gymvisual.com/) before any redistribution. Nothing
+from that dataset remains in this repository.

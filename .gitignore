@@ -1,6 +1,7 @@
-# Exercise media — fetched on first `docker compose up` (or via scripts/fetch-media.sh)
-media/img/
-media/gif/
+# Exercise photos — fetched on first `docker compose up` (or via scripts/fetch-media.sh)
+media/ex/
+# 3D demo videos, dropped in by whoever runs the instance
+media/vid/
 
 # Runtime data — users, passkeys, per-user state, session secret
 data/

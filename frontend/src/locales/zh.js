@@ -203,7 +203,6 @@ export default {
   'Delete routine?': '删除训练日？',
   '“{0}” and its exercises will be removed.': '“{0}”及其动作将被移除。',
   'Delete routine': '删除训练日',
-  '{0} exercises with animations': '{0} 个带动画的动作',
   'Search…': '搜索…',
   'No workouts yet.': '还没有训练。',
   'Starter plan loaded — Mon Push · Wed Pull · Fri Legs': '入门计划已加载——周一推 · 周三拉 · 周五腿',
@@ -332,9 +331,9 @@ export default {
   // --- custom exercises (#11) ---
   'Create your own exercise': '创建自己的动作',
   'Edit custom exercise': '编辑自定义动作',
-  'Name it and pick a body part — it behaves like any other exercise, just without an animation.': '起个名字并选择身体部位——它和其他动作一样使用，只是没有动画。',
+  "Name it and pick a body part — it behaves like any other exercise, just without photos.": "取个名字并选择身体部位 — 它和其他动作一样，只是没有照片。",
   'Exercise name': '动作名称',
-  'name + body part, no animation': '名称 + 身体部位，无动画',
+  "name + body part, no photos": "名称 + 身体部位，无照片",
   'Create exercise': '创建动作',
   'Give it a name': '请输入名称',
   'Pick a body part': '请选择身体部位',
@@ -725,4 +724,13 @@ export default {
   "Could not delete the account — try again when you’re online.": "无法删除账户 — 请联网后重试。",
   "Signs this account out on every device, including this one. Sign in again anytime with your email and password.": "在所有设备（包括本设备）上退出此账户。随时可以用邮箱和密码重新登录。",
   "Your latest changes aren’t synced yet — you stay signed in. Try again once you’re online.": "你最近的更改尚未同步 — 你将保持登录。联网后请重试。",
+  // exercise dataset vocabulary
+  "machine": "器械",
+  "other": "其他",
+  "foam roller": "泡沫轴",
+  "middle back": "背部中段",
+  "beginner": "初级",
+  "intermediate": "中级",
+  "expert": "高级",
+  "{0} exercises with photo demos": "{0} 个动作，附照片演示",
 }
