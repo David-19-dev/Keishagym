@@ -8,9 +8,11 @@ import {
 import { registerCustom } from './exercises.js'
 
 // The two runtimes share no build step, so the client's copy of the fingerprint logic is
-// checked against the server's actual source rather than against a transcribed expectation.
-import * as serverPayload from '../../../api/coach/payload.js'
-import { hashPlan as serverHashPlan } from '../../../api/coach/jobs.js'
+// checked against the Coach function's actual source rather than against a transcribed
+// expectation. Both modules are pure on purpose — importing anything that touches a filesystem
+// or a network would make this suite depend on where it runs.
+import * as serverPayload from '../../../supabase/functions/coach/payload.js'
+import { hashPlan as serverHashPlan } from '../../../supabase/functions/coach/hash.js'
 
 const state = (over = {}) => ({
   unit: 'kg', lang: 'en', customEx: [], workouts: [], bodyweight: [], exWeights: {}, dayPlan: {},
@@ -122,7 +124,7 @@ describe('staleness', () => {
 
 describe('applying changes', () => {
   it('has an implementation for every type the server can send', async () => {
-    const { CHANGE_TYPES: serverTypes } = await import('../../../api/coach/validate.js')
+    const { CHANGE_TYPES: serverTypes } = await import('../../../supabase/functions/coach/validate.js')
     expect([...CHANGE_TYPES].sort()).toEqual([...serverTypes].sort())
   })
 

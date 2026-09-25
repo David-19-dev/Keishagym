@@ -1,17 +1,16 @@
-# Publishes the browser-only demo to GitHub Pages: https://duartesantos8.github.io/openGym/
+# Publishes the browser-only demo to GitHub Pages.
 #
 # Pages serves static files only, so this build has no backend — VITE_DEMO=1 makes the app
 # boot straight into guest mode with a seeded example history (see frontend/src/lib/demo.js).
-# The exercise images/GIFs (~140 MB) are never committed here; the demo build points at the
-# upstream dataset on jsDelivr instead, pinned to a commit so the CDN can cache it forever.
+# The exercise photos (~80 MB) are never committed here; the demo build points at the upstream
+# dataset on jsDelivr instead, pinned so the CDN can cache it forever.
+#
+# Manual on purpose: KeishaGym's demo will live on its own domain, and this repository has no
+# Pages site — running it on every push only produced a red cross. Enable Pages in the
+# repository settings ("GitHub Actions" as the source), then run this workflow by hand.
 name: Deploy demo to GitHub Pages
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/pages.yml'
   workflow_dispatch:
 
 permissions:
@@ -24,7 +23,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DATASET: https://cdn.jsdelivr.net/gh/hasaneyldrm/exercises-dataset@7455efae41b330c265e7cd4b78dfa848e7ce5ebd
+  DATASET: https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/
 
 jobs:
   build:
@@ -42,8 +41,7 @@ jobs:
         working-directory: frontend
         env:
           VITE_DEMO: '1'
-          VITE_IMG_BASE: ${{ env.DATASET }}/images/
-          VITE_GIF_BASE: ${{ env.DATASET }}/videos/
+          VITE_EX_BASE: ${{ env.DATASET }}
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
