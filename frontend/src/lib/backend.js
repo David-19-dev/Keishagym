@@ -50,3 +50,29 @@ export async function pullRemoteState() {
 export async function pushRemoteState(userId, state) {
   await withFreshToken(() => sb.from('user_state').upsert({ user_id: userId, state }))
 }
+
+/* The Coach runs as an Edge Function (supabase/functions/coach). It is called directly rather
+ * than through supabase-js's functions.invoke, because the failure codes matter: the client
+ * has wording for 'busy', 'cap', 'consent' and the rest, and invoke() flattens a non-2xx into
+ * a generic FunctionsHttpError with the body unread.
+ */
+export async function callCoach(body) {
+  const { data: { session } } = await sb.auth.getSession()
+  const r = await fetch(URL.replace(/\/$/, '') + '/functions/v1/coach', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: KEY,
+      ...(session ? { Authorization: 'Bearer ' + session.access_token } : {}),
+    },
+    body: JSON.stringify(body),
+  })
+  const data = await r.json().catch(() => ({}))
+  if (!r.ok) {
+    const e = new Error(data.error || 'HTTP ' + r.status)
+    e.status = r.status
+    e.code = data.code || null
+    throw e
+  }
+  return data
+}

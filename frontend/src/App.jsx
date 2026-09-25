@@ -6,6 +6,8 @@ import { bindUI } from './components/ui.jsx'
 import { setLang, useLang } from './lib/i18n.js'
 import { setNav } from './lib/nav.js'
 import { useWakeLock } from './lib/wakelock.js'
+import { coachAvailable, reviewDue } from './lib/coach.js'
+import { requestReview } from './lib/coach-api.js'
 import { startFlow } from './sheets.jsx'
 import Icon from './components/Icon.jsx'
 import TabBar from './components/TabBar.jsx'
@@ -40,6 +42,7 @@ function Shell() {
   const navigate = useNavigate()
   const loc = useLocation()
   const { S, user, ready } = useStore()
+  const config = useStore(s => s.config)
   const isGuest = useStore(s => s.isGuest())
   const langV = useLang()   // re-renders the whole shell when the language (pack) changes
   useEffect(() => { setNav(navigate) }, [navigate])
@@ -50,6 +53,14 @@ function Shell() {
   useEffect(() => { window.scrollTo(0, 0) }, [loc.pathname])
   // bound to the workout, not to the route — checking Stats mid-session keeps the screen on
   useWakeLock(!!S.active && S.keepAwake !== false)
+  // A scheduled review fires when the app opens and one is due (lib/coach.js). Once per launch,
+  // never mid-workout — the Coach is not something to meet between two sets. Failures are
+  // swallowed: it is a background nicety, and the Coach screen reports properly on its own.
+  useEffect(() => {
+    if (!ready || S.active || !coachAvailable(config, user)) return
+    if (!reviewDue(S)) return
+    requestReview('').catch(() => {})
+  }, [ready, config, user])
 
   const authed = user || isGuest
   if (!ready && !authed) return (

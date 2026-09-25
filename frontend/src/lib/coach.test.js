@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   canonicalPlan, planHash, hashPlan, markStale, applicable, currentValue,
   pushSnapshot, revertLast, canRevert, appendLog, applyChangeSet, applyCreatedPlan,
-  recordDismissal, validateProposal, coachAvailable, hasConsent,
+  recordDismissal, validateProposal, coachAvailable, hasConsent, reviewDue,
   CHANGE_TYPES, SNAPSHOT_MAX, LOG_MAX, CONSENT_VERSION
 } from './coach.js'
 import { registerCustom } from './exercises.js'
@@ -369,5 +369,56 @@ describe('validation', () => {
     expect(() => validateProposal({ changes: [{ type: 'drop-database' }] })).toThrow()
     expect(() => validateProposal({ bundle: { routines: [] } })).toThrow()
     expect(validateProposal({ changes: [change()] })).toBe(true)
+  })
+})
+
+describe('scheduled reviews', () => {
+  const at = (day, hh, mm = 0) => new Date(2026, 8, day, hh, mm)   // Sept 2026: the 7th is a Monday
+  const withCadence = (cadence, workouts = [], lastReview = null) =>
+    state({ coach: { ...state().coach, cadence, lastReview }, workouts })
+  const session = (d, end) => ({ id: d, d, end, entries: [] })
+
+  it('never fires when the cadence is off', () => {
+    expect(reviewDue(withCadence('off', [session('2026-09-07', at(7, 19).getTime())]), at(7, 20))).toBe(false)
+  })
+
+  it('never fires without consent, whatever the cadence says', () => {
+    const S = withCadence({ everyWorkouts: 1 }, [session('2026-09-07', at(7, 19).getTime())])
+    S.coach.consent = null
+    expect(reviewDue(S, at(7, 20))).toBe(false)
+  })
+
+  it('waits for the session count, then fires', () => {
+    const two = [session('2026-09-07', at(7, 19).getTime()), session('2026-09-09', at(9, 19).getTime())]
+    expect(reviewDue(withCadence({ everyWorkouts: 3 }, two), at(9, 20))).toBe(false)
+    expect(reviewDue(withCadence({ everyWorkouts: 2 }, two), at(9, 20))).toBe(true)
+  })
+
+  it('counts only the sessions since the last review', () => {
+    const last = { at: at(8, 12).getTime() }
+    const S = withCadence({ everyWorkouts: 2 }, [
+      session('2026-09-07', at(7, 19).getTime()),   // before the review
+      session('2026-09-09', at(9, 19).getTime()),   // after it
+    ], last)
+    expect(reviewDue(S, at(9, 20))).toBe(false)
+  })
+
+  it('fires weekly from the chosen time onwards, not only on the minute', () => {
+    const S = () => withCadence({ weekly: { day: 1, time: '18:00' } }, [session('2026-09-07', at(7, 9).getTime())])
+    expect(reviewDue(S(), at(7, 17, 59))).toBe(false)   // Monday, too early
+    expect(reviewDue(S(), at(7, 18, 0))).toBe(true)     // Monday, on time
+    expect(reviewDue(S(), at(7, 21, 30))).toBe(true)    // Monday, app opened later
+    expect(reviewDue(S(), at(8, 19))).toBe(false)       // Tuesday
+  })
+
+  it('fires once a day at most', () => {
+    const S = withCadence({ weekly: { day: 1, time: '18:00' } },
+      [session('2026-09-07', at(7, 9).getTime())], { at: at(7, 18, 30).getTime() })
+    expect(reviewDue(S, at(7, 20))).toBe(false)
+  })
+
+  it('stays quiet on a week with nothing new to read', () => {
+    expect(reviewDue(withCadence({ weekly: { day: 1, time: '18:00' } }, []), at(7, 19))).toBe(false)
+    expect(reviewDue(withCadence({ everyWorkouts: 1 }, []), at(7, 19))).toBe(false)
   })
 })

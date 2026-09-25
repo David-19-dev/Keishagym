@@ -5,7 +5,7 @@ import { LANGS } from '../lib/i18n.js'
 import { registerCustom } from '../lib/exercises.js'
 import { DEMO, DEMO_SEEDED } from '../lib/demo.js'
 import { MOBILE, nativeLoad, nativeSave, syncReminder } from '../lib/mobile.js'
-import { SUPABASE, sb, userFrom, sbError, pullRemoteState, pushRemoteState } from '../lib/backend.js'
+import { SUPABASE, sb, userFrom, sbError, pullRemoteState, pushRemoteState, callCoach } from '../lib/backend.js'
 
 const KEY = 'gym_state_v1'
 // A new profile starts in the device's language when the app speaks it — otherwise a French
@@ -251,6 +251,13 @@ export const useStore = create((set, get) => {
           if (session) {
             get().setUser(userFrom(session.user))
             await get().pullState()
+            // Is the Coach deployed and configured on this instance? One call, once per
+            // session; every Coach entry point hangs off the answer, so an instance without it
+            // renders exactly what it did before the feature existed.
+            try {
+              const st = await callCoach({ action: 'status' })
+              if (st?.enabled) set({ config: { coach: { enabled: true } } })
+            } catch (e) { /* not deployed — the feature stays hidden */ }
             const tz = localTZ()
             if (get().S.reminder?.on && get().S.reminder.tz !== tz) {
               get().update(s => { s.reminder = { ...s.reminder, tz } })

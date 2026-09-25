@@ -44,6 +44,39 @@ export const coachAvailable = (config, user, { demo, mobile } = {}) =>
   mobile ? false : demo ? true : !!(config?.coach?.enabled && user)
 export const hasConsent = S => !!S?.coach?.consent?.agreedAt && S.coach.consent.version === CONSENT_VERSION
 
+/* ============================ scheduled reviews ============================
+ * The Coach can review on its own — weekly, or after every N sessions. The old self-hosted
+ * service ticked every minute and ran them server-side; on Supabase the app owns the decision
+ * instead. Nothing is lost: a review nobody is there to read is a review nobody reads, and the
+ * app checking on open costs no scheduler, no cron and no wake-up.
+ *
+ * Both modes refuse to fire on a week with nothing new in it. A review that reports the
+ * absence of news is how people learn to ignore a feature.
+ */
+export function reviewDue(S, now = new Date()) {
+  const coach = S?.coach
+  const cadence = coach?.cadence
+  if (!cadence || cadence === 'off') return false
+  if (!hasConsent(S)) return false
+
+  const lastAt = coach.lastReview?.at || 0
+  const lastDay = lastAt ? new Date(lastAt).toISOString().slice(0, 10) : ''
+  const since = (S.workouts || []).filter(w => !lastAt || (w.end || 0) > lastAt || w.d > lastDay)
+  if (!since.length) return false
+
+  if (cadence.everyWorkouts) return since.length >= Math.max(1, Math.min(20, cadence.everyWorkouts))
+  if (cadence.weekly) {
+    // The app may not have been open at the chosen minute, so the day's window is "from that
+    // time onwards", and one per day whatever happens.
+    const hhmm = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0')
+    const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10)
+    return now.getDay() === (cadence.weekly.day ?? 0)
+      && hhmm >= (cadence.weekly.time || '18:00')
+      && lastDay !== today
+  }
+  return false
+}
+
 /* ============================ plan fingerprint ============================ */
 
 /**

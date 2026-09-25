@@ -7,6 +7,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { api } from './api.js'
+import { SUPABASE, callCoach } from './backend.js'
 import { DEMO } from './demo.js'
 import { useStore } from '../store/useStore.js'
 
@@ -21,13 +22,22 @@ let demoMod = null
 const demo = async () => (demoMod = demoMod || await import('./coach-demo.js'))
 const S = () => useStore.getState().S
 
-export const coachStatus = async () => DEMO ? (await demo()).demoStatus() : api('/api/coach/status')
-export const requestReview = async note => DEMO ? (await demo()).demoReview(S()) : api('/api/coach/review', { method: 'POST', body: JSON.stringify({ note: note || '' }) })
-export const requestPlan = async intake => DEMO ? (await demo()).demoPlan(S(), intake) : api('/api/coach/plan', { method: 'POST', body: JSON.stringify({ intake }) })
-export const refinePlan = async text => DEMO ? (await demo()).demoRefine(S()) : api('/api/coach/plan', { method: 'POST', body: JSON.stringify({ refine: text }) })
-export const resolvePending = async body => DEMO ? (await demo()).demoResolve() : api('/api/coach/pending/resolve', { method: 'POST', body: JSON.stringify(body) })
-export const forgetCoach = async () => DEMO ? (await demo()).demoResolve() : api('/api/coach/forget', { method: 'POST', body: '{}' })
-export const disclosure = async () => DEMO ? (await demo()).demoDisclosure() : api('/api/coach/disclosure')
+// Three backends answer these: the demo build fakes them locally, a Supabase build calls the
+// Coach Edge Function, and a self-hosted build calls its own API. Same shapes throughout.
+const call = (action, body) => SUPABASE
+  ? callCoach({ action, ...body })
+  : api('/api/coach/' + PATHS[action], action === 'status' || action === 'disclosure'
+    ? undefined
+    : { method: 'POST', body: JSON.stringify(body || {}) })
+const PATHS = { status: 'status', disclosure: 'disclosure', plan: 'plan', review: 'review', resolve: 'pending/resolve', forget: 'forget' }
+
+export const coachStatus = async () => DEMO ? (await demo()).demoStatus() : call('status')
+export const requestReview = async note => DEMO ? (await demo()).demoReview(S()) : call('review', { note: note || '' })
+export const requestPlan = async intake => DEMO ? (await demo()).demoPlan(S(), intake) : call('plan', { intake })
+export const refinePlan = async text => DEMO ? (await demo()).demoRefine(S()) : call('plan', { refine: text })
+export const resolvePending = async body => DEMO ? (await demo()).demoResolve() : call('resolve', body)
+export const forgetCoach = async () => DEMO ? (await demo()).demoResolve() : call('forget', {})
+export const disclosure = async () => DEMO ? (await demo()).demoDisclosure() : call('disclosure')
 
 /**
  * Live job/proposal state.
